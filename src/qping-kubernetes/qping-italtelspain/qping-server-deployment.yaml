@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qping
+  labels:
+    app: qping-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qping-server
+  template:
+    metadata:
+      labels:
+        app: qping-server
+    spec:
+      containers:
+      - name: qping-server
+        image: italtelspain/qping:0.1.0
+        ports:
+        - containerPort: 25450
+      - name: redis-server
+        image: redis:latest
+        ports:
+        - containerPort: 6379

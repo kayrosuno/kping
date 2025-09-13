@@ -1,0 +1,52 @@
+FROM alpine:latest
+
+ARG GOLANG_VERSION=1.21.4
+
+#we need the go version installed from apk to bootstrap the custom version built from source
+RUN apk update && apk add go gcc bash musl-dev openssl-dev ca-certificates && update-ca-certificates
+
+RUN wget https://dl.google.com/go/go$GOLANG_VERSION.src.tar.gz && tar -C /usr/local -xzf go$GOLANG_VERSION.src.tar.gz
+
+RUN cd /usr/local/go/src && ./make.bash
+
+ENV PATH=$PATH:/usr/local/go/bin
+
+RUN rm go$GOLANG_VERSION.src.tar.gz
+
+#we delete the apk installed version to avoid conflict
+RUN apk del go
+
+RUN go version
+
+
+
+# Set destination for COPY
+WORKDIR /app
+
+# Download Go modules
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy the source code. Note the slash at the end, as explained in
+# https://docs.docker.com/engine/reference/builder/#copy
+COPY *.go ./
+
+# Build
+RUN CGO_ENABLED=0 GOOS=linux go build -o /qping
+
+# Optional:
+# To bind to a TCP port, runtime parameters must be supplied to the docker command.
+# But we can document in the Dockerfile what ports
+# the application is going to listen on by default.
+# https://docs.docker.com/engine/reference/builder/#expose
+EXPOSE 25450/tcp
+EXPOSE 25450/udp
+
+
+# Set kernel parameters for high bandwidth 
+# RUN sudo sysctl -w net.core.rmem_max=2500000
+# esto no funciona, lanzar con  docker run --syctl   // RUN sudo sysctl -w net.core.wmem_max=2500000
+
+
+#Run 
+CMD ["/qping","server"]

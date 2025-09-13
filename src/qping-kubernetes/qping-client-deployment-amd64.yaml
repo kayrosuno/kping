@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qping-client-deployment
+  namespace: italtel
+  labels:
+    app: qping-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qping-client
+  template:
+    metadata:
+      labels:
+        app: qping-client
+    spec:
+      containers:
+      - name: qping-client
+        image: kayrosuno/qping-client-amd64:0.3.2
+        # Argumento >> servicio y namespace interno del cluster. Puerto del pod. Delay
+        args: ["-d10","qping-svc-nodeport.italtel.svc.cluster.local:25450"]
+        #imagePullPolicy: Always
+        #        ports:
+        #- containerPort: 25450
+        # imagePullPolicy: Always
+#      nodeSelector:
+#        name: controller-1

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: qping-server-service-clusterip
+spec:
+  type: ClusterIP
+  ports:
+  - port: 30450  
+    targetPort: 25450
+    protocol: UDP
+  externalIPs:
+    - 18.100.136.60
+  selector:
+    app: qping-server

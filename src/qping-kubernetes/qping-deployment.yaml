@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qping-deployment
+  labels:
+    app: qping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qping
+  template:
+    metadata:
+      labels:
+        app: qping
+    spec:
+      containers:
+      - name: qping
+        image: kayrosuno/qping:latest
+        ports:
+        - containerPort: 25450

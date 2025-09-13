@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: qping
+spec:
+  containers:
+  - name: qping
+    image: iacobus75/qping:1.0
+    ports:
+    - containerPort: 25450
