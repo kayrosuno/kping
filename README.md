@@ -1,23 +1,28 @@
-# QPING
+# KPING
 
-qping is a ping utility for the QUIC protocol
-available in go and Swift. 
+kqping is an utility to test networking communications in kubernetes cluster. 
 
-qping support RFC 9000
-QUIC: A UDP-Based Multiplexed and Secure Transport
+kping has been developed using go for linux platforms and Swift for macOS and linux.
+
+kping can test communications launching the programa as server and using the program in another node, container or node as client. 
+
+kping can work with the dolowwing protocolos:
+- UDP
+- UCP/QUIC
+- TCP
 
 Available implementation in go and swift help to test 5G networks low latency using QUIC protocols, measure RTT, MTU and Bandwith. go implementations are suitable for use in machines running Linux or macOS while swift implementation is helpfull to do the test over iOS devices with 5G connectivity as well as macOS
 
 
-## qping server mode
+## kping server mode
 In "server" mode qping act as a server listening for QUIC connection. Open a new connection for each client and listen for the request, the server reply to each client request
 
-Use: qping server <port>
-Example: ./qping server 25450
+Use: kping server <port>
+Example: ./kping server 25450
 
 Start a quic server to listen into the specified port, default port is 25450
 
-Example: ./qping server
+Example: ./kping server
 
 ###  macOS - Swift
 Developed version with Swift language using Apple library Network and NWProtocolQUIC. This version run over macOS 12.0+   
@@ -26,13 +31,13 @@ Developed version with Swift language using Apple library Network and NWProtocol
 Developed version with go language. This version use quicgo library. This version run over Linux servers.
  
 
-## qping client mode
-qping is a client written in go and swift to connect to a server using QUIC. 
+## kping client mode
+kping is a client written in go and swift to connect to a server using QUIC, UDP or TCP. 
 The client send requests to the server and receive from the server answers to measure rtt.
-You need a qping acting as server to reply to client requests.
+You need a kping acting as server to reply to client requests.
 
-Use: qping <ip_server>:<port>
-Example: ./qping 192.168.2.70:30000
+Use: kping <ip_server>:<port>
+Example: ./kping 192.168.2.70:30000
 
 ### macOS - Swift 
 Developed version with Swift language using Apple library Network and NWProtocolQUIC. This version run over macOS 12.0+   
