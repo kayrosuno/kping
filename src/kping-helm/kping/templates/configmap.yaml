@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kping-configmap
+data:
+  port: "25450"
+  protocol: "UDP"

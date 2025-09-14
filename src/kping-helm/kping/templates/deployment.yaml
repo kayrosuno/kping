@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kping-server-deployment
+  namespace: kping
+  labels:
+    app: kping-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kping-server
+  template:
+    metadata:
+      labels:
+        app: kping-server
+    spec:
+      containers:
+      - name: kping-server
+        image: kayrosuno/kping:latest
+        ports:
+        - containerPort: 25450
+        - containerPort: 25451
+        imagePullPolicy: Always
