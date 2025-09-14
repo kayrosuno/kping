@@ -10,7 +10,18 @@ El modulo de go es: kayros.uno/kping
 `go build kayros.uno/kping`
 
 
-#### Crear imagen de docker
+#### Opcion A. Crear imagen de docker (multibuild)
+
+`
+docker image build --platform=linux/amd64,linux/arm64 -t kayrosuno/kping:0.3.2   -t kayrosuno/kping:latest  .
+`
+
+Se utiliza el fichero Dockerfile, que establece dos fases, una para compilar go con la imagen golang y otra para la distribución basada en la imagen de ubuntu
+Hay diferentes ficheros Dockerfile con distintas arquitecturas
+
+
+
+#### Opcion B. Crear imagen de docker (caso arquitecturas concretas)
 
 `
 docker image build -t kayrosuno/kping-amd64:0.3.2   -t kayrosuno/kping-amd64:latest  .

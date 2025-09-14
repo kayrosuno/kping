@@ -2,7 +2,7 @@
 
 kqping is an utility to test networking communications in kubernetes cluster. 
 
-kping has been developed using go for linux platforms and Swift for macOS and linux.
+kping has been developed using go for linux platforms and Swift for macOS/iOS
 
 kping can test communications launching the programa as server and using the program in another node, container or node as client. 
 
