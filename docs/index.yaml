@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  kping:
+  - apiVersion: v2
+    appVersion: 0.3.2
+    created: "2025-09-14T20:12:31.828299+02:00"
+    description: kping helm chart to test Kubernetes networking
+    digest: ee339ce0ccf5309be7aea3c111554d232fe7176b463740e925e4cb3a22cd0bbc
+    name: kping
+    type: application
+    urls:
+    - https://kayrosuno.github.io/kping/kping-0.3.2.tgz
+    version: 0.3.2
+generated: "2025-09-14T20:12:31.825398+02:00"
