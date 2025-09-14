@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qping-server-deployment
+  namespace: italtel
+  labels:
+    app: qping-server
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: qping-server
+  template:
+    metadata:
+      labels:
+        app: qping-server
+    spec:
+      containers:
+      - name: qping-server
+        image: kayrosuno/qping-amd64:0.3.2
+        ports:
+        - containerPort: 25450
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: pvc-qping
+          mountPath: "/mnt"
+      volumes:
+        - name: pvc-qping
+          persistentVolumeClaim:
+            claimName: rwx-qping-claim
