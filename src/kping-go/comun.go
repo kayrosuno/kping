@@ -31,7 +31,7 @@ const iPortDefault int = 25450 //Puerto por defecto de escucha
 // const message = "Mensaje de prueba" //Mensaje de prueba por defecto
 // var wg sync.WaitGroup               //grupo de sincronización de threads
 var Program = "kping"   //Nombre del programa
-var Version = "0.3.2"   //Version actual
+var Version = "0.3.3"   //Version actual
 const maxMessage = 1024 //Longitud en bytes maximo del mensaje
 const MAX_TIME_READ_DEADLINE = time.Second * 5
 

@@ -53,9 +53,9 @@ USER $USERNAME
 
 
 # Label docker image
-LABEL version="0.3.2"
+LABEL version="0.3.3"
 LABEL maintaner="Alejandro Garcia"
-LABEL release-date="04-07-2025"
+LABEL release-date="07-12-2025"
 #LABEL promoted="true"
 
 
@@ -65,6 +65,8 @@ WORKDIR /app
 COPY --from=build-stage /app/kping /app/kping
 
 EXPOSE 25450/udp
+EXPOSE 25451/udp
+EXPOSE 25450/tcp
 
 #Ejecuta kping en modo server, default port 25450 UDP (QUIC)
 ENTRYPOINT ["/app/kping","server"]

@@ -16,9 +16,10 @@ spec:
     spec:
       containers:
       - name: qping-server
-        image: kayrosuno/qping:0.1.1
+        image: kayrosuno/qping:0.2
         ports:
         - containerPort: 25450
+        - containerPort: 25451
       - name: redis-server
         image: redis:latest
         ports:

@@ -16,6 +16,7 @@ limitations under the License.
 package main
 
 import (
+	"fmt"
 	"net"
 	"os"
 
@@ -70,34 +71,34 @@ var serverCmd = &cobra.Command{
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "kping <ipv4:port> or <ipv4:port> or kping \"[ipv6]:port>\" ",
-	Short: "Start kping in client mode to send request to kping server",
+	Use:   "kping <mode> <ipv4:port> or kping <mode> <ipv6:port>",
+	Short: "Start kping in client mode to send request to kping server using QUIC+UDP connection",
 	Long: `kping is a test program written in go to verify the functionality of networking in kubernetes clusters
-kping act as a client or as ping server listening ping from querys from the clients answering
-with a time mark to measure on the client the RTT `,
+kping act as a client or as ping server listening ping querys from the clients answering
+with a time mark to measure on the client the RTT. You can increase the delay between packets send using key-up or key-down `,
 	Args: func(cmd *cobra.Command, args []string) error {
 
 		// Optionally run one of the validators provided by cobra
 		if err := cobra.MinimumNArgs(1)(cmd, args); err != nil {
 			return err
 		}
-
-		// Check UDP addreess for QUIC
-		_, err := net.ResolveUDPAddr("udp", args[0])
-		if err != nil {
-			return err
-		}
-
-		// if(udpAddr.IP)
-		// //return net.ListenUDP("udp", udpAddr)
-		return nil
+		//
+		//// Check UDP addreess for QUIC
+		//_, err := net.ResolveUDPAddr("udp", args[0])
+		//if err != nil {
+		//	return err
+		//}
+		//
+		//// if(udpAddr.IP)
+		//// //return net.ListenUDP("udp", udpAddr)
+		return fmt.Errorf("command error. Use 'kping help' to see available commands")
 
 		//return fmt.Errorf("invalid color specified: %s", args[0])
 	},
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		QClient(true, args)
+		//QClient(true, args)
 	},
 }
 
@@ -113,7 +114,7 @@ var TCPCmd = &cobra.Command{
 			return err
 		}
 
-		// Check UDP addreess for QUIC
+		// Check UDP address for QUIC
 		_, err := net.ResolveUDPAddr("udp", args[0])
 		if err != nil {
 			return err
@@ -128,7 +129,69 @@ var TCPCmd = &cobra.Command{
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		QClient(false, args)
+		QClient(false, false, args)
+	},
+}
+
+// UDPCmd represents the base command when called without any subcommands
+var UDPCmd = &cobra.Command{
+	Use:   "udp <host:port>",
+	Short: "Start kping in UDP client mode to send request to UDP kping server. Use: kping udp <ipv4/6:port>",
+	Long:  `kping is a test program written in go to verify RTT. This mode use a UDP connection. Default mode use QUIC+UDP connection. `,
+	Args: func(cmd *cobra.Command, args []string) error {
+
+		// Optionally run one of the validators provided by cobra
+		if err := cobra.MinimumNArgs(1)(cmd, args); err != nil {
+			return err
+		}
+
+		// Check UDP address for QUIC
+		_, err := net.ResolveUDPAddr("udp", args[0])
+		if err != nil {
+			return err
+		}
+
+		// if(udpAddr.IP)
+		// //return net.ListenUDP("udp", udpAddr)
+		return nil
+
+		//return fmt.Errorf("invalid color specified: %s", args[0])
+	},
+	// Uncomment the following line if your bare application
+	// has an action associated with it:
+	Run: func(cmd *cobra.Command, args []string) {
+		QClient(false, true, args)
+	},
+}
+
+// Quickmd represents the base command when called without any subcommands
+var QUICCmd = &cobra.Command{
+	Use:   "quic <host:port>",
+	Short: "Start kping in QUIC+UDP client mode to send request to QUIC/UDP kping server. Use: kping quic <ipv4:port>",
+	Long:  `kping is a test program written in go to verify RTT. This mode use a QUIC/UDP connection. Default mode use QUIC+UDP connection. `,
+	Args: func(cmd *cobra.Command, args []string) error {
+
+		// Optionally run one of the validators provided by cobra
+		if err := cobra.MinimumNArgs(1)(cmd, args); err != nil {
+			return err
+		}
+
+		// Check UDP address for QUIC
+		_, err := net.ResolveUDPAddr("udp", args[0])
+		if err != nil {
+			return err
+		}
+
+		// if(udpAddr.IP)
+		// //return net.ListenUDP("udp", udpAddr)
+		return nil
+
+		//return fmt.Errorf("invalid color specified: %s", args[0])
+	},
+	// Uncomment the following line if your bare application
+	// has an action associated with it:
+	Run: func(cmd *cobra.Command, args []string) {
+		QClient(true, true, args)
 	},
 }
 
@@ -148,8 +211,10 @@ var versionCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(versionCmd)
-	rootCmd.AddCommand(serverCmd)
+	rootCmd.AddCommand(QUICCmd)
+	rootCmd.AddCommand(UDPCmd)
 	rootCmd.AddCommand(TCPCmd)
+	rootCmd.AddCommand(serverCmd)
 
 	// Here you will define your flags and configuration settings.
 

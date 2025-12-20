@@ -5,9 +5,16 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - port: 25450  
+  - name: qping-quic-udp
+    port: 25450  
     nodePort: 30450
     targetPort: 25450
+    protocol: UDP
+
+  - name: qping-udp
+    port: 25451  
+    nodePort: 30451
+    targetPort: 25451
     protocol: UDP
   selector:
     app: qping-server

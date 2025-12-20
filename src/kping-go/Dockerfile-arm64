@@ -21,7 +21,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /app/kping
 # Deploy the application binary into a clean image
 FROM ubuntu:latest AS build-release-stage
 
-#Instalar aplicaciones
+#Instalar net-tools
 RUN apt-get update && apt-get -qq -y install curl
 RUN apt-get install -y apt-utils
 RUN apt-get install -y net-tools
@@ -36,6 +36,7 @@ ARG USER_GID=$USER_UID
 # Create the user
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+    
     #
     # [Optional] Add sudo support. Omit if you don't need to install software after connecting.
     && apt-get update \
@@ -50,11 +51,14 @@ RUN groupadd --gid $USER_GID $USERNAME \
 # [Optional] Set the default user. Omit if you want to keep the default as root.
 USER $USERNAME
 
+
 # Label docker image
 LABEL version="0.3.2"
 LABEL maintaner="Alejandro Garcia"
 LABEL release-date="04-07-2025"
 #LABEL promoted="true"
+
+
 
 WORKDIR /app
 

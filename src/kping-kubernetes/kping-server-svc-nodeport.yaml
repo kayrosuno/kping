@@ -10,11 +10,10 @@ spec:
     nodePort: 30450
     targetPort: 25450
     protocol: UDP
-
-  - name: kping-udp
-    port: 25451  
-    nodePort: 30451
-    targetPort: 25451
-    protocol: UDP
+  - name: kping-tcp
+    port: 25450
+    nodePort: 30450
+    targetPort: 25450
+    protocol: TCP
   selector:
     app: kping-server

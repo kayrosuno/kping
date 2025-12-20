@@ -5,7 +5,7 @@ metadata:
   labels:
     app: kping-server
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: kping-server
@@ -26,7 +26,22 @@ spec:
           name: "quic-udp"
         - containerPort: 25451
           protocol: UDP
-          name: "udp only"
----
-apiVersion: apps/v1
-kind: ""
+          name: "udp"
+        volumeMounts:
+          - name: data1
+            mountPath: /app/data1
+          - name: data2
+            mountPath: /app/tmp
+          - name: data3
+            mountPath: /app/ds415
+      volumes:
+        - name: data1
+          persistentVolumeClaim:
+            claimName: local-pvc
+        - name: data2
+          hostPath:
+            path: /tmp
+            type: DirectoryOrCreate
+        - name: data3
+          persistentVolumeClaim:
+            claimName: pvc-smb-5g

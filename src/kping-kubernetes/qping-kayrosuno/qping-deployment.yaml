@@ -5,7 +5,7 @@ metadata:
   labels:
     app: qping
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: qping
@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: qping
-        image: iacobus75/qping:1.0
+        image: kayrosuno/qping:latest
         ports:
         - containerPort: 25450

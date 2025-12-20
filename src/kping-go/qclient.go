@@ -61,7 +61,7 @@ var loss = 0
 
 // Main echo client
 // llamada -> qgo ipaddress:port
-func QClient(bquic bool, args []string) {
+func QClient(bQuic bool, bUdp bool, args []string) {
 
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339})
 	log.Info().Str(Program, Version).Msg("kping client mode")
@@ -72,7 +72,7 @@ func QClient(bquic bool, args []string) {
 
 	// Check UDP addresses
 	var argsConnection = ""
-	if bquic {
+	if bUdp {
 		argsConnection = args[0]
 		udpAdr, err := net.ResolveUDPAddr("udp", argsConnection)
 		//log.Info().Str("arg0", args[0]).Msg("<< args[0]")
@@ -80,21 +80,46 @@ func QClient(bquic bool, args []string) {
 			log.Panic().Msg(err.Error())
 			panic(err.Error())
 		}
-		log.Info().Str("IP:", udpAdr.IP.String()).Str("Port", fmt.Sprint(udpAdr.Port)).Msg("Connecting to remote QUIC peer")
-		//Check parameters
-		tlsConf := &tls.Config{
-			InsecureSkipVerify: true,
-			NextProtos:         []string{"kayros.uno"},
-		}
-		//Conectar al servidor QUIC remoto
-		conn, err := quic.DialAddr(context.Background(), argsConnection, tlsConf, nil)
-		if err != nil {
-			//Log error
-			log.Error().Msg(fmt.Sprintf("'%s'\n", err.Error()))
-			return
+
+		if bQuic {
+			log.Info().Str("IP:", udpAdr.IP.String()).Str("Port", fmt.Sprint(udpAdr.Port)).Msg("Connecting to remote QUIC/UDP peer")
+			//Check parameters
+			tlsConf := &tls.Config{
+				InsecureSkipVerify: true,
+				NextProtos:         []string{"kayros.uno"},
+			}
+			//Conectar al servidor QUIC remoto
+			conn, err := quic.DialAddr(context.Background(), argsConnection, tlsConf, nil)
+			if err != nil {
+				//Log error
+				log.Error().Msg(fmt.Sprintf("'%s'\n", err.Error()))
+				return
+			}
+
+			go clientLoop(conn, nil, nil)
+		} else {
+			argsConnection = args[0]
+			udpAdr, err := net.ResolveUDPAddr("udp", argsConnection)
+			//log.Info().Str("arg0", args[0]).Msg("<< args[0]")
+			if err != nil {
+				log.Panic().Msg(err.Error())
+				panic(err.Error())
+			}
+			log.Info().Str("IP:", udpAdr.IP.String()).Str("Port", fmt.Sprint(udpAdr.Port)).Msg("Connecting to remote only UDP peer")
+
+			// 2. Dial the server address to create a connection
+			// When you use Dial, the kernel automatically assigns a local port.
+			connUDP, err := net.DialUDP("udp", nil, udpAdr)
+			if err != nil {
+				fmt.Printf("Error dialing UDP server: %v\n", err)
+				os.Exit(1)
+			}
+			defer connUDP.Close()
+
+			//fmt.Printf("UDP client connected to %s\n", connUDP.RemoteAddr().String())
+			go clientLoop(nil, nil, connUDP)
 		}
 
-		go clientLoop(conn, nil)
 	} else {
 		argsConnection = args[0]
 		tcpAdr, err := net.ResolveTCPAddr("tcp", argsConnection)
@@ -105,7 +130,7 @@ func QClient(bquic bool, args []string) {
 		}
 		log.Info().Str("IP:", tcpAdr.IP.String()).Str("Port", fmt.Sprint(tcpAdr.Port)).Msg("Connecting to remote TCP peer")
 		//Conectar al servidor QUIC remoto
-		conn, err := net.Dial("tcp", tcpAdr.String())
+		conn, err := net.DialTCP("tcp", nil, tcpAdr)
 		if err != nil {
 			//Log error
 			log.Error().Msg(fmt.Sprintf("'%s'\n", err.Error()))
@@ -113,7 +138,7 @@ func QClient(bquic bool, args []string) {
 		}
 		//Cerrar diferido
 		defer conn.Close()
-		go clientLoop(nil, conn)
+		go clientLoop(nil, conn, nil)
 	}
 
 	//UUID
@@ -206,7 +231,7 @@ func printSummary() {
 }
 
 // Client Loop for QUIC
-func clientLoop(connQuic *quic.Conn, connTCP net.Conn) { //stream quic.Stream) {
+func clientLoop(connQuic *quic.Conn, connTCP *net.TCPConn, connUDP *net.UDPConn) { //stream quic.Stream) {
 
 	//Stream Quic
 	var stream *quic.Stream
@@ -225,6 +250,9 @@ func clientLoop(connQuic *quic.Conn, connTCP net.Conn) { //stream quic.Stream) {
 	}
 	if connTCP != nil {
 		defer connTCP.Close()
+	}
+	if connUDP != nil {
+		defer connUDP.Close()
 	}
 
 	//Bucle de envío continuo del cliente
@@ -273,7 +301,7 @@ func clientLoop(connQuic *quic.Conn, connTCP net.Conn) { //stream quic.Stream) {
 			//Leer echo desde el server
 			//
 			// TODO
-			err = stream.SetReadDeadline(time.Now().Add(time.Second)) // 1seg
+			err = stream.SetReadDeadline(time.Now().Add(MAX_TIME_READ_DEADLINE))
 			if err != nil {
 				//Log error
 				log.Error().Msg(fmt.Sprintf("Error '%s'", err.Error()))
@@ -308,6 +336,31 @@ func clientLoop(connQuic *quic.Conn, connTCP net.Conn) { //stream quic.Stream) {
 			//readline for TCP
 			connTCP.SetReadDeadline(time.Now().Add(MAX_TIME_READ_DEADLINE))
 			bytesReaded, err = connTCP.Read(buf)
+			if err != nil {
+				//Log error
+				log.Error().Msg(fmt.Sprintf("Error '%s'", err.Error()))
+				chEndClient <- true //Notify client exit
+				return
+			}
+		}
+
+		//Conexion es UDP
+		if connUDP != nil {
+			_, err = connUDP.Write(data)
+			if err != nil {
+				//Log error
+				log.Error().Msg(fmt.Sprintf("Error '%s'", err.Error()))
+				chEndClient <- true //Notify client exit
+				return
+			}
+			//Leer echo desde el server
+			//
+			// TODO check reply
+			// Read data from the client
+			//readline for TCP
+			connUDP.SetReadDeadline(time.Now().Add(MAX_TIME_READ_DEADLINE))
+
+			bytesReaded, err = connUDP.Read(buf)
 			if err != nil {
 				//Log error
 				log.Error().Msg(fmt.Sprintf("Error '%s'", err.Error()))
