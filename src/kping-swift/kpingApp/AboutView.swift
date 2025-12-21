@@ -23,12 +23,12 @@
 import SwiftUI
 
 struct AboutView: View {
-    @EnvironmentObject  var appData: QPingAppData
+    @EnvironmentObject  var appData: KPingAppData
     
     var body: some View {
         Text("")
-        Text("\(QPing.Program)")
-        Text("version: \(QPing.Version)")
+        Text("\(KPing.Program)")
+        Text("version: \(KPing.Version)")
         Text("")
         Text("Alejandro Garcia - 2024")
         //Text("github/kayrosuno")
@@ -52,5 +52,6 @@ struct AboutView: View {
 }
 
 #Preview {
-    AboutView()
+     AboutView()
+    .environmentObject(KPingAppData(path: NavigationPath()))
 }

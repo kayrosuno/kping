@@ -347,7 +347,7 @@ class RendererTriangle: NSObject, MTKViewDelegate
 //        }
 //
         
-        let partes: Float = Float(Date.now.timeIntervalSince1970 - initialTime).truncatingRemainder(dividingBy: loopDuration)
+//        let partes: Float = Float(Date.now.timeIntervalSince1970 - initialTime).truncatingRemainder(dividingBy: loopDuration)
         let angulo: Float = Float((360/60 / loopDuration) * Float(Date.now.timeIntervalSince1970 - initialTime)).truncatingRemainder(dividingBy: 360)
         //print("Angulo: \(angulo)")
         var argument = argumentDataColor(rotationAngle1: angulo,rotationAngle2: angulo/2) //angulo de giro
@@ -411,26 +411,26 @@ class RendererTriangle: NSObject, MTKViewDelegate
         //print("Angulo: \(angulo)")
       
         //Matrix uniforms
-        let yAxis = simd_float4(0, -1, 0 , 0)
-        let xAxis = simd_float4(1, 0, 0 , 0)
+//        let yAxis = simd_float4(0, -1, 0 , 0)
+//        let xAxis = simd_float4(1, 0, 0 , 0)
         let zAxis = simd_float4(0, 0, -0.8 , 0)
        
         //Matriz identidad
-        var matrix_id = matrix_identity_float4x4
+        let matrix_id = matrix_identity_float4x4
     
         var matrix_model_rot = MatrixFunctions.rotationAboutAxis(zAxis, byAngle: angulo)
-        var matrix_model_scale =  MatrixFunctions.makeScaleMatrix(xScale: 0.2, yScale: 0.2)
+        let matrix_model_scale =  MatrixFunctions.makeScaleMatrix(xScale: 0.2, yScale: 0.2)
         
         matrix_model_rot =  matrix_model_rot * matrix_model_scale * matrix_id
-        var matrix_perspective = MatrixFunctions.perspectiveProjection(aspect, fieldOfViewY: 60, near: 0.1, far: 100.0)
+        let matrix_perspective = MatrixFunctions.perspectiveProjection(aspect, fieldOfViewY: 60, near: 0.1, far: 100.0)
         
         //makeScaleMatrix(xScale: 0.5, yScale: 0.5)
         
 
        // var Time = Date.now.timeIntervalSince1970  * 1000
-        var currentFrame = uptime()
-        var deltaTime = Float(currentFrame - lastFrame)
-        var cameraSpeed = Float(0.5) * deltaTime
+        let currentFrame = uptime()
+        let deltaTime = Float(currentFrame - lastFrame)
+        let cameraSpeed = Float(0.5) * deltaTime
         lastFrame = currentFrame
         
         if (Keyboard.IsKeyPressed(KeyCodes.w) || Keyboard.IsKeyPressed(KeyCodes.upArrow) )

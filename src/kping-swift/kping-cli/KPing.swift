@@ -30,28 +30,28 @@ enum QPingLogLevel: Int, Codable {
     
 }
 
-// QPiong struct containing global parameters and variables.
+// KPing struct containing global parameters and variables.
 @MainActor
-struct QPing {
+struct KPing {
     
     /// Default port used for qping. 25450. Adapated to kubernetes cluster.
-    nonisolated(unsafe) static let log_level:QPingLogLevel = QPingLogLevel.Debug
+    static let log_level:QPingLogLevel = QPingLogLevel.Debug
     /// Default port used for qping. 25450. Adapated to kubernetes cluster.
     static let portDefault = "25450"
     ///Program name
-    static let Program = "qping"
+    static let Program = "kping"
     /// Nombre del programa
     //Version
-    static let Version = "0.3.2"
+    static let Version = "0.3.3"
     /// Version actual
     /// Longitud en bytes maximo del mensaje
     static let maxMessage = 2024
     /// The UDP maximum package size is 64K 65536
-    nonisolated(unsafe) static let MTU = 65536
+    static let MTU = 65536
     /// Max num of lines to show in GUI interface (really are characters)
     static let MAX_LINES_GUI = 150
     /// Default message
-    static let mensaje = "qping client mensaje"
+    static let mensaje = "kping client mensaje"
     /// Mensaje standar
     static let mensaje_data = "mensaje".data(using: .utf8)
     /// QClient instance
@@ -59,13 +59,13 @@ struct QPing {
     /// QServer instance
     nonisolated(unsafe) static var qserver: QServer?
     /// GUI Data
-    nonisolated(unsafe)  static var qpingAppData: QPingAppData?
+    nonisolated(unsafe)  static var qpingAppData: KPingAppData?
     /// Estado de nwConnection. //TODO: de client or server???
     static var estado = NWConnection.State.cancelled
     /// Time delayed to wait and send for a query in ms
     static let DELAY_LOOP_SERVER_ns: UInt64 = 1000000000 * 10
     /// Time out de la conexion. 1min
-    nonisolated(unsafe) static let CONNECTION_TIMEOUT = 1000 * 60 * 1
+    static let CONNECTION_TIMEOUT = 1000 * 60 * 1
     /// 1SEG in nano
     static let DELAY_1SEG_ns: UInt64 = 1000000000
     /// client loop for  conditional exit

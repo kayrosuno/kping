@@ -20,49 +20,49 @@
 
 import Foundation
 import SwiftUI
+import Combine
 import SwiftData
 
 ///
 ///Datos de la aplicación GUI, observable.
 ///
-@Observable
-class QPingAppData: Identifiable, ObservableObject {
+class KPingAppData: Identifiable, ObservableObject {
    
-    var showAboutView = false
+    @Published var showAboutView = false
     
     /// Ejecutar qping. Enlazado a los botones stop y start en DetailClusterView
-    var runPing = false
-    var path: NavigationPath
-    var vistaActiva = TipoVistaActiva.root
+    @Published var runPing = false
+    @Published var path: NavigationPath
+    @Published var vistaActiva = TipoVistaActiva.root
     
     /// Cluster seleccionado en la pantalla lateral
-    var selectedCluster: ClusterK8SData?
+    @Published var selectedCluster: ClusterK8SData?
     
     /// Cluster que se está editando
-    var editCluster: ClusterK8SData?
+    @Published var editCluster: ClusterK8SData?
     
     /// Cluster que esta ejecutándose (running)
-    var clusterRunning: ClusterK8S?
-    var QUIC_UDP = true
+    @Published var clusterRunning: ClusterK8S?
+    @Published var QUIC_UDP = true
     //var estadoCluster = "Stop"
     //var qpingOutputNode = ""
-    var sendIntervalns = 1000.0 * 1000 * 1000//ns, default 1000ms=1seg
-    var sidebarbackground: (any View)?
-    var selectionProtocol = "QUIC+UDP"
+    @Published var sendIntervalns = 1000.0 * 1000 * 1000//ns, default 1000ms=1seg
+    @Published var sidebarbackground: (any View)?
+    @Published var selectionProtocol = "QUIC+UDP"
    // var nodeSelected = ""
     
     //Para visualizar, datos en clusterk8s, el view debe de estar asociado a un objeto observble.
     /// Min RTT del cluster
-    var minRTTns = 0.0
+    @Published var minRTTns = 0.0
     ///medRTT
-    var medRTTns = 0.0
+    @Published var medRTTns = 0.0
     /// Max RTT del cluster
-    var maxRTTns = 0.0
+    @Published var maxRTTns = 0.0
     /// Last RTT del cluster
-    var actualRTTns = 0.0
+    @Published var actualRTTns = 0.0
     
     /// Time de actualizacon datos del GUI
-    var timestamp: String = TimeNow()
+    @Published var timestamp: String = TimeNow()
     
     init(path: NavigationPath){
         self.path = path
@@ -82,3 +82,4 @@ extension FloatingPoint {
         return Formatter.number.string(for:  self) ?? ""
     }
 }
+

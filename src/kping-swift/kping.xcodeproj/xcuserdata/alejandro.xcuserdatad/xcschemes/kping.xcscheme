@@ -59,17 +59,20 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A9D1DB0B2B0197EC00EA545C"
+            BuildableName = "kping"
+            BlueprintName = "kping"
+            ReferencedContainer = "container:kping.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "A9D1DB0B2B0197EC00EA545C"
             BuildableName = "qping"
             BlueprintName = "qping"
             ReferencedContainer = "container:qping.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
-      <CommandLineArguments>
-         <CommandLineArgument
-            argument = "127.0.0.1:25450"
-            isEnabled = "YES">
-         </CommandLineArgument>
-      </CommandLineArguments>
+      </MacroExpansion>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

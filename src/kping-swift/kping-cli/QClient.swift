@@ -56,7 +56,7 @@ struct QClient {
         //Parámetros de QUIC
         let quicOptions = NWProtocolQUIC.Options(alpn: ["kayros.uno"])
         quicOptions.direction = .bidirectional
-        quicOptions.idleTimeout = QPing.CONNECTION_TIMEOUT
+        quicOptions.idleTimeout = KPing.CONNECTION_TIMEOUT
         let securityProtocolOptions: sec_protocol_options_t = quicOptions
             .securityProtocolOptions
         sec_protocol_options_set_verify_block(
@@ -86,7 +86,7 @@ struct QClient {
         //Establecer la funcion de recepción
         nwConnection.receive(
             minimumIncompleteLength: 1,
-            maximumLength: QPing.MTU,
+            maximumLength: KPing.MTU,
             completion: handleClientReceiveData
         )
     }
@@ -154,7 +154,7 @@ func clientCLIHandleConnectionStateChanged(to state: NWConnection.State) {
 }
 
 ///CLIENTE: Handle receive Data
-@Sendable func clientCLIHandleReceiveData(
+ func clientCLIHandleReceiveData(
     _ content: Data?,
     _ contentContext: NWConnection.ContentContext?,
     _ isComplete: Bool?,
@@ -214,10 +214,10 @@ func clientCLIHandleConnectionStateChanged(to state: NWConnection.State) {
     //Registrar de nuevo el handler
     //Establecer handle de recepción
     Task {
-          if let qclient = await QPing.qclient {
+          if let qclient =  KPing.qclient {
               qclient.registerReceiveHandler(
                   minimumIncompleteLength: 1,
-                  maximumLength: QPing.MTU,
+                  maximumLength: KPing.MTU,
                   completion: clientCLIHandleReceiveData
               )
           }
@@ -226,16 +226,16 @@ func clientCLIHandleConnectionStateChanged(to state: NWConnection.State) {
 }
 
 /// CLIENT: Connection failed callback
-@Sendable func clientCLIConnectionFailed(error: Error) {
+func clientCLIConnectionFailed(error: Error) {
 
     print("connection failed: " + error.localizedDescription)
 
     //Para loop
-    Task { await QPing.setClientLoop(false) }
+    Task { await KPing.setClientLoop(false) }
 }
 
 /// CLIENT: Connection ended callback
-@Sendable func clientCLIConnectionEnded(error: Error?) {
+func clientCLIConnectionEnded(error: Error?) {
     if error != nil {
         print("connection ended: " + error!.localizedDescription)
     } else {
@@ -243,16 +243,16 @@ func clientCLIHandleConnectionStateChanged(to state: NWConnection.State) {
     }
 
     //Para loop
-    Task { await QPing.setClientLoop(false) }
+    Task { await KPing.setClientLoop(false) }
 }
 
 /// CLIENT: Send  callback.
-@Sendable func clientCLISendCompleted(error: Error?) {
+func clientCLISendCompleted(error: Error?) {
     if error != nil {
         print("Send error: " + error!.localizedDescription)
         
         //Para loop
-        Task { await QPing.setClientLoop(false) }
+        Task { await KPing.setClientLoop(false) }
     }
 }
 

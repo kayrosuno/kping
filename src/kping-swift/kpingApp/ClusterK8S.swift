@@ -52,10 +52,10 @@ class ClusterK8S: Identifiable, Hashable {
     /// Delay between send request
     //var delayns = 0.0  //ms
     ///AppData, reference to update swiftUI
-    private var appData: QPingAppData?
+    private var appData: KPingAppData?
 
     /// init ClusterK8S
-    init(clusterData: ClusterK8SData, appData: QPingAppData)  //Utilizar el mismo id del cluster que el modelo de datos ClusterK8SData
+    init(clusterData: ClusterK8SData, appData: KPingAppData)  //Utilizar el mismo id del cluster que el modelo de datos ClusterK8SData
     {
         self.clusterData = clusterData
         self.id = clusterData.id

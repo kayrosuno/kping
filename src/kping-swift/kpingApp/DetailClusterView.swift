@@ -22,7 +22,7 @@ import SwiftUI
 
 struct DetailClusterView: View {
 
-    @EnvironmentObject var qpingAppData: QPingAppData
+    @EnvironmentObject var qpingAppData: KPingAppData
 
     @State var nodeIP = ""
     @State var QUIC = true

@@ -19,13 +19,14 @@
 //  limitations under the License.
 
 import SwiftUI
+import SwiftData
 
 
 //
 //   View para crear o editar cluster. Se edita si el cluster de edición está en la propiedad appData.editCluster, si es nil se añade
 //
 struct ClusterEditorView: View {
-    @EnvironmentObject  var appData: QPingAppData
+    @EnvironmentObject  var appData: KPingAppData
     @State private var cluster_name = ""
     @State private var port_qping = ""
     @State private var node1_ip = ""
@@ -93,7 +94,7 @@ struct ClusterEditorView: View {
     
     func save() {
         
-        let sPort = UInt16 (port_qping) ?? UInt16(QPing.portDefault)!
+        let sPort = UInt16 (port_qping) ?? UInt16(KPing.portDefault)!
         if let cluster = appData.editCluster {
             // Edit the cluster
             cluster.name = cluster_name

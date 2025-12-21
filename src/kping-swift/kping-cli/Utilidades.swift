@@ -49,7 +49,7 @@ func TimeNow() -> String
 ///GENERAL:  print DEBUG if log level is set in QPing to QPingLogLevel.Debug
 @Sendable func printDEBUG(_ cadena: String) {
    
-    if QPing.log_level == QPingLogLevel.Debug {
+    if KPing.log_level == QPingLogLevel.Debug {
         print(cadena)
     }
 }

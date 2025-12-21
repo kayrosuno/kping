@@ -26,7 +26,7 @@ import AppKit
 
 struct MetalViewMac: NSViewRepresentable  {
     typealias NSViewType = NSView
-    @Environment(QPingAppData.self) private var appData
+    //@EnvironmentObject(KPingAppData.self) private var appData
     //@Binding  var path: NavigationPath
     var tipoRender: TipoRenderGPU = TipoRenderGPU.Triangle_1
    

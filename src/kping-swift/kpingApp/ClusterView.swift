@@ -21,7 +21,7 @@
 import SwiftUI
 
 struct ClusterView: View {
-    @EnvironmentObject var qpingAppData: QPingAppData
+    @EnvironmentObject var qpingAppData: KPingAppData
 
     let step = 100
     let range = 100...1000
@@ -225,6 +225,6 @@ struct ClusterView: View {
     }
 }
 
-#Preview {
-    ClusterView()
-}
+//#Preview {
+//    ClusterView()
+//}

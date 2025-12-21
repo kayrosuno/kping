@@ -22,7 +22,7 @@ import SwiftUI
 
 struct SettingsView: View {
     
-    @EnvironmentObject  var appData: QPingAppData
+    @EnvironmentObject  var appData: KPingAppData
     
     let protocols = ["QUIC+UDP", "Only UDP"]
     
@@ -42,4 +42,5 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
+        .environmentObject(KPingAppData(path: NavigationPath()))
 }

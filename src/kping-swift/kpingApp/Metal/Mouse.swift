@@ -20,6 +20,8 @@
 
 
 import simd
+import AppKit
+import CoreGraphics
 
 ///
 /// https://github.com/twohyjr/NSView-Keyboard-and-Mouse-Input

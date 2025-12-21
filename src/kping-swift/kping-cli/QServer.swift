@@ -69,7 +69,7 @@ actor QServer{
         //Parámetros de QUIC
         let quicOptions = NWProtocolQUIC.Options(alpn: ["kayros.uno"])
         quicOptions.direction = .bidirectional
-        quicOptions.idleTimeout = QPing.CONNECTION_TIMEOUT
+        quicOptions.idleTimeout = KPing.CONNECTION_TIMEOUT
         let securityProtocolOptions: sec_protocol_options_t = quicOptions.securityProtocolOptions
         sec_protocol_options_set_verify_block(securityProtocolOptions,
                                               { (_: sec_protocol_metadata_t,

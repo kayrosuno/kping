@@ -7,7 +7,7 @@
 //  Copyright © 2023-2024 Alejandro Garcia <iacobus75@gmail.com>  <alejandro@kayros.uno>
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
-//  you may not use this file except in compliance with the License.
+//  You may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
@@ -20,7 +20,9 @@
 
 import SwiftUI
 import SwiftData
+#if os(iOS)
 import CoreTelephony
+#endif
 
 
 
@@ -28,12 +30,12 @@ import CoreTelephony
 /// App QPing
 ///
 @main
-struct QPingApp: App {
+struct KPingApp: App {
     //AppData para guardar estado de la aplicacion entre vistas
-    @StateObject private var qpingData = QPingAppData(path: NavigationPath())
-#if os(iOS)
-private var info: CTTelephonyNetworkInfo!
-#endif
+    @StateObject private var qpingData = KPingAppData(path: NavigationPath())
+    #if os(iOS)
+    private var info: CTTelephonyNetworkInfo!
+    #endif
 
     var body: some Scene {
         
@@ -43,7 +45,7 @@ private var info: CTTelephonyNetworkInfo!
                 .modelContainer(for: [
                     ClusterK8SData.self
                 ])
-                .environment(qpingData)
+                .environmentObject(qpingData)
                 .preferredColorScheme(.dark)
                 .onAppear()
 #if os(macOS)
@@ -61,7 +63,7 @@ private var info: CTTelephonyNetworkInfo!
         // Settings window
         Settings() {
             SettingsView()
-        }  .environment(qpingData)
+        }  .environmentObject(qpingData)
 #endif
     }
     
@@ -111,3 +113,4 @@ private var info: CTTelephonyNetworkInfo!
 //#endif
 
 }
+

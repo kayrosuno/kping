@@ -55,7 +55,7 @@ final class ClientConnection: Sendable {
         
         //Establecer handle de recepción
         nwConnection.receive(minimumIncompleteLength: 1,
-                             maximumLength: QPing.MTU,
+                             maximumLength: KPing.MTU,
                              completion: handleClientConnectionReceiveData)
         
         //Iniciar cola de recepción
@@ -126,7 +126,7 @@ final class ClientConnection: Sendable {
         //Registrar de nuevo el handler
         //Establecer handle de recepción
         nwConnection.receive(minimumIncompleteLength: 1,
-                             maximumLength: QPing.MTU,
+                             maximumLength: KPing.MTU,
                              completion: handleClientConnectionReceiveData)
         
     }

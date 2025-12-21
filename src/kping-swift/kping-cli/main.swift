@@ -24,7 +24,7 @@ import Network
 // Esto es Swift!!  Podemos comenzar desde el principio a escribir el programa!!
 // Main
 do {
-    print("\(QPing.Program) \(QPing.Version)")
+    print("\(KPing.Program) \(KPing.Version)")
     if CommandLine.arguments.count < 2 {
         uso()
         exit(-1)
@@ -36,7 +36,7 @@ do {
         if CommandLine.arguments.count > 2 {
             try await serverLoop(serverport: CommandLine.arguments[2])
         } else {
-            try await serverLoop(serverport: String(QPing.portDefault))
+            try await serverLoop(serverport: String(KPing.portDefault))
         }
 
     case "help", "-h":  //Help
@@ -68,7 +68,7 @@ do {
 @MainActor
 func serverLoop(serverport: String) async throws {
 
-    print("\(TimeNow()) qping server loop")
+    print("\(TimeNow()) kping server loop")
 
     guard let port = UInt16(serverport) else {
         throw QError.invalidPort(
@@ -76,11 +76,11 @@ func serverLoop(serverport: String) async throws {
         )
     }
 
-    print("\(TimeNow()) Starting qping QUIC server on port: \(port)")
+    print("\(TimeNow()) Starting kping QUIC server on port: \(port)")
 
     // Iniciar QServer
-    QPing.qserver = QServer(port: port)
-    guard let qserver = QPing.qserver else {
+    KPing.qserver = QServer(port: port)
+    guard let qserver = KPing.qserver else {
         throw QError.generic(error: "Internal error creating qping server") //TODO: Especificar error. Throw?
     }
         
@@ -95,7 +95,7 @@ func serverLoop(serverport: String) async throws {
             // RunLoop.current.run(until: .now + 30)  //segundos
             //Espera delaySend ms
             //try await Task.sleep( for: .milliseconds(QPing.delaySendms), tolerance: .seconds(30)           )
-            try await Task.sleep(nanoseconds: QPing.DELAY_LOOP_SERVER_ns)
+            try await Task.sleep(nanoseconds: KPing.DELAY_LOOP_SERVER_ns)
             
             //TODO: Chequear estado del listener
             await print(
@@ -117,7 +117,7 @@ func serverLoop(serverport: String) async throws {
             exit(-1)
 
         default:
-            try await Task.sleep(nanoseconds: QPing.DELAY_1SEG_ns)  //nanosegundos
+            try await Task.sleep(nanoseconds: KPing.DELAY_1SEG_ns)  //nanosegundos
 
         }
     }
@@ -145,14 +145,14 @@ func clientLoop(addr: String) async throws {
     }
 
     //Cliente qping
-    QPing.qclient = QClient(
+    KPing.qclient = QClient(
         host: hostname,
         port: port,
         handleClientConnectionStateChanged: clientCLIHandleConnectionStateChanged,
         handleClientReceiveData: clientCLIHandleReceiveData
     )
     //TODO: <<<>>> gestionar estado
-    guard let qclient = QPing.qclient else {
+    guard let qclient = KPing.qclient else {
         throw QError.generic(error: "Internal error creating qping client")  //TODO: Especificar error. throw?
     }
 
@@ -163,7 +163,7 @@ func clientLoop(addr: String) async throws {
     var iteration:Int64 = 1
     
     //Bucle
-    while QPing.clientLoop {
+    while KPing.clientLoop {
         //Check network state
         switch qclient.getConnectionState()
         {
@@ -189,7 +189,7 @@ func clientLoop(addr: String) async throws {
                     Date().timeIntervalSince1970 * 1000 * 1000
                 ),
                 Time_server: 0,
-                Data: QPing.mensaje_data!
+                Data: KPing.mensaje_data!
             )
 
             let encoder = JSONEncoder()
@@ -214,7 +214,7 @@ func clientLoop(addr: String) async throws {
         }
 
         //Espera delaySend ms
-        try await Task.sleep(nanoseconds: QPing.DELAY_1SEG_ns)
+        try await Task.sleep(nanoseconds: KPing.DELAY_1SEG_ns)
     }
 
 }
@@ -253,7 +253,7 @@ func handleServerStateChanged(to newState: NWListener.State) {
 ///SERVER: Handle for new connection
 func handleNewConnectionInServer(_ nwConnection: NWConnection) {
 
-    guard let qserver = QPing.qserver else {
+    guard let qserver = KPing.qserver else {
         //throw QError.generic(error: "Internal error creating qping server") //TODO: Especificar error. Throw?
         print("Internal error 290.")
         exit(-1)

@@ -22,7 +22,7 @@ import SwiftUI
 
 struct RootView: View {
 
-    @EnvironmentObject var qpingAppData: QPingAppData
+    @EnvironmentObject var qpingAppData: KPingAppData
 
 
     var body: some View {
@@ -134,10 +134,10 @@ struct RootView: View {
         }
         
         .navigationTitle(
-            String(qpingAppData.selectedCluster?.name ?? QPing.Program + " " + QPing.Version)
+            String(qpingAppData.selectedCluster?.name ?? KPing.Program + " " + KPing.Version)
         )
         .onAppear {
-            QPing.qpingAppData = qpingAppData  //Set appData for GUI update
+            KPing.qpingAppData = qpingAppData  //Set appData for GUI update
         }
     }
 }

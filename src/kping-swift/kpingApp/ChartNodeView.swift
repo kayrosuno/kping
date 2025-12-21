@@ -23,7 +23,7 @@ import SwiftUI
 
 struct ChartNodeView: View {
 
-    @EnvironmentObject var qpingAppData: QPingAppData
+    @EnvironmentObject var qpingAppData: KPingAppData
 
     #if os(iOS)
         let espaciado = 0.0
