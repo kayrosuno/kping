@@ -76,7 +76,7 @@ struct RootView: View {
                     //Para cluster anterior
                     if qpingAppData.clusterRunning != nil {
                         // Parar cluster si estaba corriendo?
-                        stopQClientGUI()
+                        Task{ await stopQClientGUI(appData: qpingAppData) }
                     }
                     
                     guard let selectedCluster = qpingAppData.selectedCluster else {
@@ -86,15 +86,16 @@ struct RootView: View {
                     }
                     //Crear nuevo cluster
                     qpingAppData.clusterRunning = ClusterK8S(clusterData: selectedCluster, appData: qpingAppData)
-                    
-                    do
-                    {
-                        //Ejecutar QPing
-                        try  runQClientGUI( appData: qpingAppData )
-                    }
-                    catch
-                    {
-                        qpingAppData.runPing = false
+                    Task {
+                        do
+                        {
+                            //Ejecutar QPing
+                            try  await runQClientGUI( appData: qpingAppData )
+                        }
+                        catch
+                        {
+                            qpingAppData.runPing = false
+                        }
                     }
                 }  , label: {HStack{
                     Text("Start")
@@ -107,7 +108,7 @@ struct RootView: View {
                     qpingAppData.runPing=false
                     // 1. Parar
                     if qpingAppData.clusterRunning != nil {
-                        stopQClientGUI()
+                        Task{ await stopQClientGUI(appData: qpingAppData) }
                     }
                     //qpingAppData.clusterRunning = nil
                     
@@ -134,11 +135,11 @@ struct RootView: View {
         }
         
         .navigationTitle(
-            String(qpingAppData.selectedCluster?.name ?? KPing.Program + " " + KPing.Version)
+            String(qpingAppData.selectedCluster?.name ?? KPingState.Program + " " + KPingState.Version)
         )
-        .onAppear {
-            KPing.qpingAppData = qpingAppData  //Set appData for GUI update
-        }
+//        .onAppear {
+//            KPing.qpingAppData = qpingAppData  //Set appData for GUI update
+//        }
     }
 }
 

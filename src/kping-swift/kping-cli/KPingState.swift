@@ -22,7 +22,7 @@ import Foundation
 import Network
 
 /// Enumeracion de tipos de log level
-enum QPingLogLevel: Int, Codable {
+enum KPingLogLevel: Int, Codable {
     case Error = 0
     case Warning
     case Info
@@ -31,11 +31,11 @@ enum QPingLogLevel: Int, Codable {
 }
 
 // KPing struct containing global parameters and variables.
-@MainActor
-struct KPing {
+
+actor KPingState {
     
     /// Default port used for qping. 25450. Adapated to kubernetes cluster.
-    static let log_level:QPingLogLevel = QPingLogLevel.Debug
+    static let log_level:KPingLogLevel = KPingLogLevel.Debug
     /// Default port used for qping. 25450. Adapated to kubernetes cluster.
     static let portDefault = "25450"
     ///Program name
@@ -51,39 +51,72 @@ struct KPing {
     /// Max num of lines to show in GUI interface (really are characters)
     static let MAX_LINES_GUI = 150
     /// Default message
-    static let mensaje = "kping client mensaje"
+    static let mensaje = "kping client message"
     /// Mensaje standar
     static let mensaje_data = "mensaje".data(using: .utf8)
-    /// QClient instance
-    nonisolated(unsafe) static var qclient: QClient?
-    /// QServer instance
-    nonisolated(unsafe) static var qserver: QServer?
-    /// GUI Data
-    nonisolated(unsafe)  static var qpingAppData: KPingAppData?
-    /// Estado de nwConnection. //TODO: de client or server???
-    static var estado = NWConnection.State.cancelled
     /// Time delayed to wait and send for a query in ms
     static let DELAY_LOOP_SERVER_ns: UInt64 = 1000000000 * 10
     /// Time out de la conexion. 1min
     static let CONNECTION_TIMEOUT = 1000 * 60 * 1
     /// 1SEG in nano
     static let DELAY_1SEG_ns: UInt64 = 1000000000
+    /// QClient instance
+    private(set) var qclient: QClient?
+    /// QServer instance
+    private(set) var qserver: QServer?
+    /// GUI Data
+    private(set) var qpingAppData: KPingAppData?
+    /// Estado de nwConnection. //TODO: de client or server???
+    private(set) var estado = NWConnection.State.cancelled
+  
     /// client loop for  conditional exit
-    nonisolated(unsafe) static var clientLoop = true
+    private(set)var clientLoop = true
     ///JSON Encoder
 //    static let encoder = JSONEncoder()
 //    ///JSON Decoder
 //    static let decoder = JSONDecoder()
 //    /// contador de print
-    nonisolated(unsafe) static var print_id:Int64 = 0
+    private(set) var print_id:Int64 = 0
 
-    static func setClientLoop(_ value: Bool) async {
+//    func createQClient(host: String, port: UInt16)async -> QClient{
+//        self.qclient = QClient(host: host, port: port)
+//        return self.qclient!
+//    }
+    
+   
+    
+    func incPrintId() {
+        self.print_id += 1
+    }
+    
+    func setQClient(qclient: QClient)  {
+        self.qclient = qclient
+    }
+    
+    func setQServer(qserver: QServer)  {
+        self.qserver = qserver
+    }
+    
+    func setClientLoop(_ value: Bool)  {
         self.clientLoop = value
     }
     
-    static func setQClient(_ value: QClient) async {
+    func setQClient(_ value: QClient) {
         self.qclient = value
     }
     
+    func setQServer(_ value: QServer){
+        self.qserver = value
+    }
+
+//    init(qserver: QServer)
+//    {
+//        self.qserver = qserver
+//    }
+//    
+//    init(qclient: QClient)
+//    {
+//        self.qclient = qclient
+//    }
 }
 

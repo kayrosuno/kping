@@ -4,7 +4,7 @@
 //
 //  Created by Alejandro on 1/5/25.
 //
-//  Copyright © 2023-2024 Alejandro Garcia <iacobus75@gmail.com>  <alejandro@kayros.uno>
+//  Copyright © 2023-2026 Alejandro Garcia <iacobus75@gmail.com>  <alejandro@kayros.uno>
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -26,17 +26,18 @@ import SwiftUI
 
 // MARK: stopQClient
 /// Para cliente QPing
-@MainActor func stopQClientGUI()
+@MainActor
+func stopQClientGUI(appData: KPingAppData) async
 {
-    if let c = KPing.qclient{
-        c.stopConnection()
+    if let c = appData.qclient{
+        await c.stopConnection()
     }
 }
 
 // MARK: runQClient
 /// Loop para espera de comando start y para ejecucion de qping en loop
 @MainActor
-func runQClientGUI(appData: KPingAppData) throws {
+func runQClientGUI(appData: KPingAppData)  async throws -> Void {
     
     //if appData ?? { print("QClientGUI: Error cluster not found.") ; return }
     let cluster = appData.clusterRunning  //Do all activity quth the cluster running
@@ -67,35 +68,48 @@ func runQClientGUI(appData: KPingAppData) throws {
 
     let qclient = QClient(
         host: cluster.clusterData.nodes[cluster.clusterData.nodeSelected],
-        port: cluster.clusterData.port,
-        handleClientConnectionStateChanged:
-            clientGUIHandleConnectionStateChanged,
-        handleClientReceiveData: clientGUIHandleReceiveData
-    )
+        port: cluster.clusterData.port)
+    
+    await qclient.SetClientHandleConnectionStateChanged(handleClientConnectionStateChanged: { state in
+          Task { @MainActor in
+              clientGUIHandleConnectionStateChanged(to: state)
+          }
+      })
+
+      await qclient.SetClientHandleClientReceiveData(handleClientReceiveData: { content, contentContext, isComplete, error in
+          Task { @MainActor in
+              clientGUIHandleReceiveData(content, contentContext, isComplete, error)
+          }
+      })
+    
+//    await qclient.SetClientHandleConnectionStateChanged(handleClientConnectionStateChanged: clientGUIHandleConnectionStateChanged)
+//    
+//    await qclient.SetClientHandleClientReceiveData(handleClientReceiveData: clientGUIHandleReceiveData)
+    
 
     // Set qping client
-    KPing.qclient = qclient
+    appData.qclient = qclient
     
     //Delay between sends and reset all states and counters
     //cluster.delayms = appData.sendIntervalns
     cluster.resetCounter()
     cluster.estadoCluster = "Running"
     cluster.startTime = uptime()
-    KPing.clientLoop = true
+    await appData.qclient!.kping!.setClientLoop(true)
     
     //Run qClient
     Task {
         do {
             //Connect
-            qclient.startConnection()
+            try await qclient.start()
 
             //id
             var iteration: Int64 = 1
 
             //Bucle
-            while KPing.clientLoop {
+            while await appData.qclient!.kping!.clientLoop {
                 //Check network state
-                switch qclient.getConnectionState()
+                switch await qclient.getConnectionState()
                 {
                 case .cancelled:
                     printGUI("\(TimeNow()) cancelled connection")
@@ -118,19 +132,13 @@ func runQClientGUI(appData: KPingAppData) throws {
                             Date().timeIntervalSince1970 * 1000 * 1000
                         ),
                         Time_server: 0,
-                        Data: KPing.mensaje_data!
+                        Data: KPingState.mensaje_data!
                     )
 
                     let encoder = JSONEncoder()
                     encoder.dateEncodingStrategy = .millisecondsSince1970
 
                     let json_data = try encoder.encode(rtt_data)
-
-                    //Send data to qping server
-                    qclient.send(
-                        data: json_data,
-                        completion: clientGUISendCompleted
-                    )
 
                     iteration += 1
 
@@ -143,7 +151,7 @@ func runQClientGUI(appData: KPingAppData) throws {
                 }
 
                 //Espera delaySend ms
-                try await Task.sleep(nanoseconds: UInt64(KPing.qpingAppData?.sendIntervalns ?? Double(KPing.DELAY_1SEG_ns)))
+                try await Task.sleep(nanoseconds: UInt64(appData.sendIntervalns))
             }
 
         } catch {
@@ -158,12 +166,17 @@ func runQClientGUI(appData: KPingAppData) throws {
 
 //MARK: clientGUIHandleConnectionStateChanged
 /// CLIENTE GUI: Handle connections state changed
-func clientGUIHandleConnectionStateChanged(to state: NWConnection.State) {
+@MainActor
+func clientGUIHandleConnectionStateChanged(to state: NWConnection.State)  -> Void  {
     switch state {
     case .waiting(_):
-         printGUI("\(TimeNow())* Client connection state changed to WAITING state")
+        printGUI(
+            "\(TimeNow())* Client connection state changed to WAITING state"
+        )
     case .failed(let error):
-        printGUI("\(TimeNow())* Client connection state changed to FAILED state")
+        printGUI(
+            "\(TimeNow())* Client connection state changed to FAILED state"
+        )
         clientGUIConnectionFailed(error: error)
 
     default:
@@ -173,19 +186,23 @@ func clientGUIHandleConnectionStateChanged(to state: NWConnection.State) {
 
 //MARK: clientGUIHandleReceiveData
 ///CLIENTE GUI: Handle receive Data
-
+@MainActor
 func clientGUIHandleReceiveData(
     _ content: Data?,
     _ contentContext: NWConnection.ContentContext?,
-    _ isComplete: Bool?,
+    _ isComplete: Bool,
     _ error: NWError?
-) {
+)  -> Void {
 
-    guard let qpingAppData = KPing.qpingAppData else {  print("\(TimeNow())clientGUIHandleReceiveData: Error no  qpingAppData"); return }
-    
-    guard let cluster = KPing.qpingAppData!.clusterRunning else {  print("\(TimeNow())clientGUIHandleReceiveData: Error no cluster nor qpingAppData"); return }
+    @EnvironmentObject var qpingAppData: KPingAppData
+    //    guard let qpingAppData = qpingAppData else {  print("\(TimeNow())clientGUIHandleReceiveData: Error no qpingAppData"); return }
+    //    
+    guard let cluster = qpingAppData.clusterRunning else {
+        print(
+            "\(TimeNow())clientGUIHandleReceiveData: Error no cluster no qpingAppData"
+        ); return
+    }
 
-    
     
     //Procesar datos recibidos de la conexión
     if let data = content, !data.isEmpty {
@@ -233,7 +250,7 @@ func clientGUIHandleReceiveData(
     }
 
     //Conexión completada/finalizada
-    if let complete = isComplete, complete == true {
+    if isComplete {
         clientGUIConnectionEnded(error: error)
         return
     }
@@ -246,44 +263,62 @@ func clientGUIHandleReceiveData(
 
     //Registrar de nuevo el handler
     //Establecer handle de recepción
-    KPing.qclient!.registerReceiveHandler(
+    Task { await qpingAppData.qclient!.registerReceiveHandler(
         minimumIncompleteLength: 1,
-        maximumLength: KPing.MTU,
-        completion: clientGUIHandleReceiveData
+        maximumLength: KPingState.MTU,
+        completion:
+            {
+                (content, contentContext, isComplete , error) in
+                Task { @MainActor in
+                    clientGUIHandleReceiveData(content, contentContext, isComplete , error)
+                }
+            }
     )
+    }
 }
 
 
 ///GENERAL:  function to print  to GUI
-@Sendable func printGUI(_ cadena: String) {
+@MainActor
+func printGUI(_ cadena: String) {
    
-    guard let cluster = KPing.qpingAppData!.clusterRunning else {  print("PrintGUI: Error no qpingAppData"); return }
+    @EnvironmentObject var qpingAppData: KPingAppData
+    
+    Task {
+    guard let cluster = qpingAppData.clusterRunning else {  print("PrintGUI: Error no qpingAppData"); return }
 
-    cluster.qpingDataString.append(
+        await cluster.qpingDataString.append(
         RTTData(
             string: cadena,
-            id: KPing.print_id,
+            id: (qpingAppData.qclient?.kping?.print_id)!,
             timeReceived: uptime(),
             delay: 0.0
         )
     )
-    KPing.print_id += 1
+    await qpingAppData.qclient?.kping!.incPrintId()
     //Update timestamp for GUI
-    KPing.qpingAppData?.timestamp = TimeNow()
+        await qpingAppData.qclient?.kping!.qpingAppData?.setTimeStamp(timestamp: TimeNow())
+        
+    }
 }
 
 
 /// CLIENT: Connection failed callback
-@Sendable func clientGUIConnectionFailed(error: Error) {
-
+@MainActor
+func clientGUIConnectionFailed(error: Error) {
+    @EnvironmentObject var qpingAppData: KPingAppData
     printGUI("connection failed: " + error.localizedDescription)
 
     //Para loop
-    KPing.clientLoop = false
+    Task {
+        await qpingAppData.qclient?.kping!.setClientLoop(false)
+    }
 }
 
 /// CLIENT: Connection ended callback
-@Sendable func clientGUIConnectionEnded(error: Error?) {
+@MainActor
+func clientGUIConnectionEnded(error: Error?) {
+    @EnvironmentObject var qpingAppData: KPingAppData
     if error != nil {
         printGUI("connection ended: " + error!.localizedDescription)
     } else {
@@ -291,16 +326,21 @@ func clientGUIHandleReceiveData(
     }
 
     //Para loop
-    KPing.clientLoop = false
+    Task {
+        await qpingAppData.qclient?.kping!.setClientLoop(false)
+    }
 }
 
 
 /// CLIENT: Send  callback.
-@Sendable func clientGUISendCompleted(error: Error?) {
+func clientGUISendCompleted(error: Error?) {
+    @EnvironmentObject var qpingAppData: KPingAppData
     if error != nil {
         printGUI("Send error: " + error!.localizedDescription)
         
         //Para loop
-        KPing.clientLoop = false
+        Task {
+            await qpingAppData.qclient?.kping!.setClientLoop(false)
+        }
     }
 }

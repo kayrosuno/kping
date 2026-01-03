@@ -22,7 +22,7 @@ import Foundation
 
 
 /// Struct for RTT QUIC. Estructura de mensaje de comunicacion entre cliente y servidor.
-struct RTTQUIC: Codable  {
+nonisolated  struct RTTQUIC: Codable  {
     /// id del mensaje
     var Id:                Int64 = 0
     

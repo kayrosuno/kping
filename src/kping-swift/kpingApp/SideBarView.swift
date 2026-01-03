@@ -40,7 +40,7 @@ struct SideBarView: View {
         VStack{
             VStack(alignment: .center){
                 Image("qping").padding(EdgeInsets(top: 5.0,leading: 5.0,bottom: 5.0,trailing: 5.0))
-                Text("\(KPing.Program) \(KPing.Version)").padding(EdgeInsets(top: 0.0,leading: 0.0,bottom: 10.0,trailing: 0.0))
+                Text("\(KPingState.Program) \(KPingState.Version)").padding(EdgeInsets(top: 0.0,leading: 0.0,bottom: 10.0,trailing: 0.0))
                 // .onAppear() {appData.sidebarbackground = self.background()}
             }
                 VStack

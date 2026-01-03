@@ -18,7 +18,6 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-
 import Foundation
 import Network
 
@@ -26,15 +25,14 @@ import Network
 /// El time es la cantidad de tiempo que el sistema esta awake.
 /// https://developer.apple.com/forums/thread/101874
 /// https://forums.swift.org/t/recommended-way-to-measure-time-in-swift/33326
-func uptime()  -> Double
+nonisolated func uptime()  -> Double
 {
     return ProcessInfo.processInfo.systemUptime
 }
 
 /// Devuelve el time en HH:mm:ss. Utilizar para formatear tiempo para logs.
-func TimeNow() -> String
+nonisolated func TimeNow() -> String
 {
-    
     // 1. Choose a date
     let today = Date()
     
@@ -42,14 +40,12 @@ func TimeNow() -> String
    // df.dateFormat = "y-MM-dd H:mm:ss.SSSS"
     df.dateFormat = "H:mm:ss.SSSS"
     
-   
     return df.string(from: today)
 }
 
 ///GENERAL:  print DEBUG if log level is set in QPing to QPingLogLevel.Debug
-@Sendable func printDEBUG(_ cadena: String) {
-   
-    if KPing.log_level == QPingLogLevel.Debug {
+nonisolated func printDEBUG(_ cadena: String) {
+    if KPingState.log_level == KPingLogLevel.Debug {
         print(cadena)
     }
 }

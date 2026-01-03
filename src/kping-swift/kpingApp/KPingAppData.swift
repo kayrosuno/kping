@@ -61,8 +61,16 @@ class KPingAppData: Identifiable, ObservableObject {
     /// Last RTT del cluster
     @Published var actualRTTns = 0.0
     
+       
     /// Time de actualizacon datos del GUI
     @Published var timestamp: String = TimeNow()
+    
+    /// qclient
+    @Published var qclient: QClient?
+    
+    func setTimeStamp(timestamp: String) {
+        self.timestamp = timestamp
+    }
     
     init(path: NavigationPath){
         self.path = path

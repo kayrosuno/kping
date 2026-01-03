@@ -27,8 +27,8 @@ struct AboutView: View {
     
     var body: some View {
         Text("")
-        Text("\(KPing.Program)")
-        Text("version: \(KPing.Version)")
+        Text("\(KPingState.Program)")
+        Text("version: \(KPingState.Version)")
         Text("")
         Text("Alejandro Garcia - 2024")
         //Text("github/kayrosuno")

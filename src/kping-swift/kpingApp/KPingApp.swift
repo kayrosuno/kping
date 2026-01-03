@@ -24,8 +24,6 @@ import SwiftData
 import CoreTelephony
 #endif
 
-
-
 ///
 /// App QPing
 ///

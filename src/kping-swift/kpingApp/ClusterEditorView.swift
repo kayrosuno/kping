@@ -94,7 +94,7 @@ struct ClusterEditorView: View {
     
     func save() {
         
-        let sPort = UInt16 (port_qping) ?? UInt16(KPing.portDefault)!
+        let sPort = UInt16 (port_qping) ?? UInt16(KPingState.portDefault)!
         if let cluster = appData.editCluster {
             // Edit the cluster
             cluster.name = cluster_name
