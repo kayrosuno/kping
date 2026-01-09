@@ -1,6 +1,6 @@
 //
 //  RootView.swift
-//  qping-gui
+//  kping-gui
 //
 //  Created by Alejandro Garcia on 28/1/24.
 //
@@ -19,131 +19,227 @@
 //  limitations under the License.
 
 import SwiftUI
+import SwiftData
 
 struct RootView: View {
-
-    @EnvironmentObject var qpingAppData: KPingAppData
-
-
+    @Environment(UIState.self) private var UISTATE
+    @State private var showingAlert = false
+    @Query var clustersData: [ClusterK8SData]
+  
+    
     var body: some View {
-
+        @Bindable var uiState: UIState = UISTATE
         NavigationSplitView {
             SideBarView()
         } detail: {
-            NavigationStack(path: $qpingAppData.path) {
-                ClusterView()
-            }
-            .navigationDestination(for: String.self) { selection in
-                VStack(alignment: .center, spacing: 20) {
-                    Text("\(selection) deleted")
-                    Text("")
-                    Button("OK") { qpingAppData.selectedCluster = nil }
-                }
-                .navigationBarBackButtonHidden()
+            NavigationStack(path: $uiState.path) {
+                NodeView()
             }
         }
         #if os(macOS)
-            .sheet(isPresented: $qpingAppData.showAboutView) { AboutView() }
+            .sheet(isPresented: $uiState.showAboutView) { AboutView() }
         #endif
 
         .toolbar {
-            ToolbarItem{
+            ToolbarItem {
                 //ProgressBar
-                if qpingAppData.runPing {
+                if uiState.runPing {
                     ProgressView()
                         #if os(iOS)
                             .progressViewStyle(.circular)
                         #else
-                            .progressViewStyle(.circular)
-                           // .frame(maxHeight: 4)
+                            .progressViewStyle(.linear)
+                        // .frame(maxHeight: 4)
 
                         #endif
-                          //  .transition(.)
+                    //  .transition(.)
                 }
             }
-            ToolbarItem { //Info
+            ToolbarItem {  //Info
                 Button(
                     action: {
-                        qpingAppData.showAboutView = true
+                        uiState.showAboutView = true
                     },
                     label: { Image(systemName: "info.circle") }
                 )
             }
-            ToolbarItem{
-                Button(action: {  // RUN CLUSTER QPing *************************
-                    qpingAppData.runPing = true
-                    
-                    //Para cluster anterior
-                    if qpingAppData.clusterRunning != nil {
-                        // Parar cluster si estaba corriendo?
-                        Task{ await stopQClientGUI(appData: qpingAppData) }
-                    }
-                    
-                    guard let selectedCluster = qpingAppData.selectedCluster else {
-                        //Ningun cluster seleccionado.
-                        //TODO: popup warning
-                        return
-                    }
-                    //Crear nuevo cluster
-                    qpingAppData.clusterRunning = ClusterK8S(clusterData: selectedCluster, appData: qpingAppData)
-                    Task {
-                        do
-                        {
-                            //Ejecutar QPing
-                            try  await runQClientGUI( appData: qpingAppData )
-                        }
-                        catch
-                        {
-                            qpingAppData.runPing = false
-                        }
-                    }
-                }  , label: {HStack{
-                    Text("Start")
-                    Image(systemName: "play.fill")}
-                .foregroundColor(Color.green)
-                })
-            }
-            ToolbarItem {
-                Button(action: {  //STOP CLUSTER QPing **************************
-                    qpingAppData.runPing=false
-                    // 1. Parar
-                    if qpingAppData.clusterRunning != nil {
-                        Task{ await stopQClientGUI(appData: qpingAppData) }
-                    }
-                    //qpingAppData.clusterRunning = nil
-                    
-                }  , label: {HStack{
-                    Text("Stop")
-                    Image(systemName: "stop.fill")}
-                .foregroundColor(Color.red)
-                })
-           
-            }
-            ToolbarItem{
-                Button(action: {   //Trash
-                    if let cluster = qpingAppData.clusterRunning {
-                        // cluster.qpingOutputNode=[QPingData(string: "", timeReceived: uptime(), delay: 0.0)]
-                        cluster.resetCounter()
-                    }
-                    //cluster.actualRTT = 0.0 // Para resfrescar los datos.
-                }  , label: {HStack{
-                    Text("Clear")
-                    Image(systemName: "trash")}
-                })
-            }
+                        ToolbarItem{
+                            Button(action: {  // RUN CLUSTER QPing *************************
+                                //Para cluster anterior si esta ejecutandose
+                                if uiState.clusterRunning.id != ClusterK8S.idINVALID {
+                                    // Parar cluster si estaba corriendo?
+                                   // Task{ await stopQClientGUI(appData: uiState) }
+                                    if let qclient = uiState.clusterRunning.qclient {
+                                        qclient.stopConnection()
+                                    }
+                                }
             
+                                if UISTATE.UUIDSelectedCluster == ClusterK8S.idINVALID {
+                                    //Ningun cluster seleccionado.
+                                    //TODO: popup warning
+                                    showingAlert = true
+                                    return
+                                }
+            
+                                //Crear nuevo cluster
+                                uiState.runPing = true
+                                uiState.clusterRunning = ClusterK8S(clusterData: getSelectedClusterData()!)
+            
+                                Task (name: "runQClientGUI2") {
+                                    do
+                                    {
+            
+                                        if  uiState.clusterRunning.clusterData.nodes[ uiState.clusterRunning.clusterData.nodeSelected] == "" {
+                                            uiState.clusterRunning.kpingDataString.append(
+                                                RTTData(
+                                                    string: "Error: No node address found.\n",
+                                                    id: 0,
+                                                    timeReceived: uptime(),
+                                                    delay: 0.0
+                                                )
+                                            )
+                                            return
+                                        }
+            
+                                        uiState.clusterRunning.kpingDataString.append(
+                                            RTTData(
+                                                string:
+                                                    "Connection to: \( uiState.clusterRunning.clusterData.nodes[ uiState.clusterRunning.clusterData.nodeSelected])",
+                                                id: 0,
+                                                timeReceived: uptime(),
+                                                delay: 0.0
+                                            )
+                                        )
+            
+                                        let qclient = QClient(
+                                            host:  uiState.clusterRunning.clusterData.nodes[ uiState.clusterRunning.clusterData.nodeSelected],
+                                            port:  uiState.clusterRunning.clusterData.port)
+            
+                                        await qclient.setFlagGUI(isGUI: true)
+                                        await qclient.SetClientHandleConnectionStateChanged(handleClientConnectionStateChanged: { state in
+                                              Task { @MainActor in
+                                                  qclient.clientGUIHandleConnectionStateChanged(to: state)
+                                              }
+                                          })
+            
+                                          await qclient.SetClientHandleClientReceiveData(handleClientReceiveData: { content, contentContext, isComplete, error in
+                                              Task { @MainActor in
+                                                  qclient.clientGUIHandleReceiveData(content, contentContext, isComplete, error)
+                                              }
+                                          })
+            
+                                        //    await qclient.SetClientHandleConnectionStateChanged(handleClientConnectionStateChanged: clientGUIHandleConnectionStateChanged)
+                                        //
+                                        //    await qclient.SetClientHandleClientReceiveData(handleClientReceiveData: clientGUIHandleReceiveData)
+            
+            
+                                        // Set qping client
+                                        uiState.clusterRunning.qclient = qclient
+            
+                                        //Delay between sends and reset all states and counters
+                                        //cluster.delayms = appData.sendIntervalns
+                                        uiState.clusterRunning.resetCounter()
+                                        uiState.clusterRunning.estadoCluster = "Running"
+                                        uiState.clusterRunning.startTime = uptime()
+                                        //await appData.qclient!.kping!.setClientLoop(true)
+            
+                                        //Start client qClient
+                                        try await qclient.start()
+            
+                                        //Ejecutar QPing
+                                        //try  await runQClientGUI( appData: uiState )
+                                    }
+                                    catch
+                                    {
+                                        uiState.runPing = false
+                                    }
+                                }
+                            }  , label: {HStack{
+                                Text("Start")
+                                Image(systemName: "play.fill")}
+                            .foregroundColor(Color.secondary)
+                            })
+                            .alert("No cluster or node selected", isPresented: $showingAlert) {
+                                Button("OK") { }}
+                        }
+                        ToolbarItem {
+                            Button(action: {  //STOP CLUSTER QPing **************************
+                                uiState.runPing=false
+                                // 1. Parar
+                                if uiState.clusterRunning.id != ClusterK8S.idINVALID {
+                                    Task{
+                                        //                            //await stopQClientGUI(appData: uiState)
+                                        //                        }
+                                        if let qclient = uiState.clusterRunning.qclient {
+                                            await qclient.stopConnection()
+                                        }
+                                    }
+                                }
+                               
+                                //qpingAppData.clusterRunning = nil
+            
+                            }  , label: {
+            //                    ZStack {
+            //                                Circle()
+            //                                    .fill(Color.blue)
+            //                                    .frame(width: 100, height: 100)
+            //
+            //                                Image(systemName: "stop.fill")
+            //                                    .foregroundColor(.white)
+            //                                    .font(.system(size: 40))
+            //                            }
+                                HStack{
+                                    Text("Stop")
+                                    Image(systemName: "stop.fill")
+                                }
+                                .foregroundColor(Color.secondary)
+                            })
+            
+                        }
+                        ToolbarItem{
+                            Button(action: {   //Trash
+                                if uiState.clusterRunning.id != ClusterK8S.idINVALID {
+                                    // cluster.qpingOutputNode=[QPingData(string: "", timeReceived: uptime(), delay: 0.0)]
+                                    uiState.clusterRunning.resetCounter()
+                                }
+                                //cluster.actualRTT = 0.0 // Para resfrescar los datos.
+                            }  , label: {
+                                HStack{
+                                    Text("Clear")
+                                    Image(systemName: "trash")
+                                }
+                                .foregroundColor(Color.secondary)
+                            })
+                        }
+
         }
-        
-        .navigationTitle(
-            String(qpingAppData.selectedCluster?.name ?? KPingState.Program + " " + KPingState.Version)
-        )
-//        .onAppear {
-//            KPing.qpingAppData = qpingAppData  //Set appData for GUI update
-//        }
+       
+        .navigationTitle(getSelectedClusterName())
+    }
+    
+    
+    func getSelectedClusterName() -> String {
+        if let index = clustersData.firstIndex(where: {$0.id == UISTATE.UUIDSelectedCluster})
+        {
+             return clustersData[index].name
+        }
+        else {
+            return String(KPingState.Program + " " + KPingState.Version)
+        }
+    }
+    
+    func getSelectedClusterData() -> ClusterK8SData? {
+        if let index = clustersData.firstIndex(where: {$0.id == UISTATE.UUIDSelectedCluster})
+        {
+             return clustersData[index]
+        }
+        else
+        {
+            return nil
+        }
     }
 }
 
 //#Preview {
-//
-//    RootView()
+//    RootView().environment(UIState.shared)
 //}

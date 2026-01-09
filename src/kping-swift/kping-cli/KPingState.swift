@@ -42,7 +42,7 @@ actor KPingState {
     static let Program = "kping"
     /// Nombre del programa
     //Version
-    static let Version = "0.3.3"
+    static let Version = "0.3.4"
     /// Version actual
     /// Longitud en bytes maximo del mensaje
     static let maxMessage = 2024
@@ -61,13 +61,13 @@ actor KPingState {
     /// 1SEG in nano
     static let DELAY_1SEG_ns: UInt64 = 1000000000
     /// QClient instance
-    private(set) var qclient: QClient?
+    //private(set) var qclient: QClient?
     /// QServer instance
     private(set) var qserver: QServer?
     /// GUI Data
-    private(set) var qpingAppData: KPingAppData?
+    //private(set) var qpingAppData: ViewAppData?
     /// Estado de nwConnection. //TODO: de client or server???
-    private(set) var estado = NWConnection.State.cancelled
+    //private(set) var estado = NWConnection.State.cancelled
   
     /// client loop for  conditional exit
     private(set)var clientLoop = true
@@ -89,9 +89,9 @@ actor KPingState {
         self.print_id += 1
     }
     
-    func setQClient(qclient: QClient)  {
-        self.qclient = qclient
-    }
+//    func setQClient(qclient: QClient)  {
+//        self.qclient = qclient
+//    }
     
     func setQServer(qserver: QServer)  {
         self.qserver = qserver
@@ -101,9 +101,9 @@ actor KPingState {
         self.clientLoop = value
     }
     
-    func setQClient(_ value: QClient) {
-        self.qclient = value
-    }
+//    func setQClient(_ value: QClient) {
+//        self.qclient = value
+//    }
     
     func setQServer(_ value: QServer){
         self.qserver = value

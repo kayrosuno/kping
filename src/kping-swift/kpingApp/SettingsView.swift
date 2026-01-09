@@ -1,10 +1,10 @@
 //
 //  SettingsView.swift
-//  qping-gui
+//  kping-gui
 //
 //  Created by Alejandro Garcia on 28/1/24.
 //
-//  Copyright © 2023-2024 Alejandro Garcia <iacobus75@gmail.com>  <alejandro@kayros.uno>
+//  Copyright © 2023-2026 Alejandro Garcia <iacobus75@gmail.com>  <alejandro@kayros.uno>
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -22,25 +22,28 @@ import SwiftUI
 
 struct SettingsView: View {
     
-    @EnvironmentObject  var appData: KPingAppData
+    @Environment(UIState.self) private var uiState
     
     let protocols = ["QUIC+UDP", "Only UDP"]
     
     var body: some View {
-        Group{
-           //Toggle("QUIC/UDP", isOn: $appData.QUIC_UDP)
-            Picker("Protocol:", selection: $appData.selectionProtocol) {
-                ForEach(protocols, id: \.self ) { item  in
-                    Text(item)
-                }
-            }
-            .pickerStyle(.segmented)
-            Text("Use QUIC protocol over UDP. Active by default.")
-        }
+//        //@Bindable var bindableUIState: UIState = uiState
+//        Group{
+//           //Toggle("QUIC/UDP", isOn: $appData.QUIC_UDP)
+//            Picker("Protocol:", selection: $bindableUIState.selectionProtocol) {
+//                ForEach(protocols, id: \.self ) { item  in
+//                    Text(item)
+//                }
+//            }
+//            .pickerStyle(.segmented)
+//            Text("Use UDP+QUIC protocol by default.")
+//        }
+        
+        Text("Settings here!")
     }
 }
 
 #Preview {
     SettingsView()
-        .environmentObject(KPingAppData(path: NavigationPath()))
+        .environment(UIState.shared)
 }

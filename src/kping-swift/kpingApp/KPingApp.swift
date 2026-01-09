@@ -1,6 +1,6 @@
 //
 //  qping_guiApp.swift
-//  qping-gui
+//  kping-gui
 //
 //  Created by Alejandro Garcia on 28/1/24.
 //
@@ -18,10 +18,11 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-import SwiftUI
 import SwiftData
+import SwiftUI
+
 #if os(iOS)
-import CoreTelephony
+    import CoreTelephony
 #endif
 
 ///
@@ -29,86 +30,85 @@ import CoreTelephony
 ///
 @main
 struct KPingApp: App {
-    //AppData para guardar estado de la aplicacion entre vistas
-    @StateObject private var qpingData = KPingAppData(path: NavigationPath())
+    //uistate para guardar estado de la aplicacion entre vistas
+    @State private var uiState = UIState.shared
+    //@State private var qclient = QClient() //dummy
+
     #if os(iOS)
-    private var info: CTTelephonyNetworkInfo!
+        private var info: CTTelephonyNetworkInfo!
     #endif
 
     var body: some Scene {
-        
+
         //Window group principal
         WindowGroup {
             RootView()
                 .modelContainer(for: [
                     ClusterK8SData.self
                 ])
-                .environmentObject(qpingData)
+                .environment(uiState)
                 .preferredColorScheme(.dark)
-                .onAppear()
-#if os(macOS)
-                .frame(minWidth: 600, minHeight: 400)
-                
-#endif
+                #if os(macOS)
+                    .frame(minWidth: 600, minHeight: 400)
+
+                #endif
         }
-        
+
         //Window group secundario de prueba.
         WindowGroup("Content") {
             ContentView2()
         }
-        
-#if os(macOS)
-        // Settings window
-        Settings() {
-            SettingsView()
-        }  .environmentObject(qpingData)
-#endif
+
+        #if os(macOS)
+            // Settings window
+            Settings {
+                SettingsView()
+            }.environment(uiState)
+        #endif
     }
-    
-    
-//    
-//#if os(iOS)
-//
-//mutating func createObserver() {
-//    info = CTTelephonyNetworkInfo();
-//    NotificationCenter.default.addObserver(self, selector: "currentAccessTechnologyDidChange",
-//                                           name: NSNotification.Name.CTRadioAccessTechnologyDidChange, object: <#Any?#>) //, object: observerObject)
-//}
-//
-//func currentAccessTechnologyDidChange() {
-//    if let currentAccess = self.info.currentRadioAccessTechnology {
-//        switch currentAccess {
-//        case CTRadioAccessTechnologyGPRS:
-//            print("GPRS")
-//        case CTRadioAccessTechnologyEdge:
-//            print("EDGE")
-//        case CTRadioAccessTechnologyWCDMA:
-//            print("WCDMA")
-//        case CTRadioAccessTechnologyHSDPA:
-//            print("HSDPA")
-//        case CTRadioAccessTechnologyHSUPA:
-//            print("HSUPA")
-//        case CTRadioAccessTechnologyCDMA1x:
-//            print("CDMA1x")
-//        case CTRadioAccessTechnologyCDMAEVDORev0:
-//            print("CDMAEVDORev0")
-//        case CTRadioAccessTechnologyCDMAEVDORevA:
-//            print("CDMAEVDORevA")
-//        case CTRadioAccessTechnologyCDMAEVDORevB:
-//            print("CDMAEVDORevB")
-//        case CTRadioAccessTechnologyeHRPD:
-//            print("HRPD")
-//        case CTRadioAccessTechnologyLTE:
-//            print("LTE")
-//        default:
-//            print("DEF")
-//        }
-//    } else {
-//        print("Current Access technology is NIL")
-//    }
-//}
-//
-//#endif
+
+    //
+    //#if os(iOS)
+    //
+    //mutating func createObserver() {
+    //    info = CTTelephonyNetworkInfo();
+    //    NotificationCenter.default.addObserver(self, selector: "currentAccessTechnologyDidChange",
+    //                                           name: NSNotification.Name.CTRadioAccessTechnologyDidChange, object: <#Any?#>) //, object: observerObject)
+    //}
+    //
+    //func currentAccessTechnologyDidChange() {
+    //    if let currentAccess = self.info.currentRadioAccessTechnology {
+    //        switch currentAccess {
+    //        case CTRadioAccessTechnologyGPRS:
+    //            print("GPRS")
+    //        case CTRadioAccessTechnologyEdge:
+    //            print("EDGE")
+    //        case CTRadioAccessTechnologyWCDMA:
+    //            print("WCDMA")
+    //        case CTRadioAccessTechnologyHSDPA:
+    //            print("HSDPA")
+    //        case CTRadioAccessTechnologyHSUPA:
+    //            print("HSUPA")
+    //        case CTRadioAccessTechnologyCDMA1x:
+    //            print("CDMA1x")
+    //        case CTRadioAccessTechnologyCDMAEVDORev0:
+    //            print("CDMAEVDORev0")
+    //        case CTRadioAccessTechnologyCDMAEVDORevA:
+    //            print("CDMAEVDORevA")
+    //        case CTRadioAccessTechnologyCDMAEVDORevB:
+    //            print("CDMAEVDORevB")
+    //        case CTRadioAccessTechnologyeHRPD:
+    //            print("HRPD")
+    //        case CTRadioAccessTechnologyLTE:
+    //            print("LTE")
+    //        default:
+    //            print("DEF")
+    //        }
+    //    } else {
+    //        print("Current Access technology is NIL")
+    //    }
+    //}
+    //
+    //#endif
 
 }
-

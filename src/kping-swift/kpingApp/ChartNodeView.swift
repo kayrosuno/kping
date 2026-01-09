@@ -23,8 +23,10 @@ import SwiftUI
 
 struct ChartNodeView: View {
 
-    @EnvironmentObject var qpingAppData: KPingAppData
-
+    @Environment(UIState.self) private var uiState
+    
+    //@Environment(ClusterK8S.self) private var clusterRunning
+    
     #if os(iOS)
         let espaciado = 0.0
     #endif
@@ -35,9 +37,9 @@ struct ChartNodeView: View {
 
     var body: some View {
 
-        if let selectedCluster = qpingAppData.selectedCluster {
-            if let clusterRunning = qpingAppData.clusterRunning {
-                if clusterRunning.id == selectedCluster.id {
+        if uiState.UUIDSelectedCluster != ClusterK8S.idINVALID {
+            if uiState.clusterRunning.id != ClusterK8S.idINVALID {
+                if uiState.clusterRunning.id ==  uiState.UUIDSelectedCluster {
                     VStack {
                         #if os(iOS)
                             Divider()
@@ -45,19 +47,17 @@ struct ChartNodeView: View {
                         #endif
                         HStack {
                             Text(
-                                "RTT: \((qpingAppData.actualRTTns/1000).fractionDigitsRounded(to: 2)) ms"
+                                "RTT: \((uiState.actualRTTns/1000).fractionDigitsRounded(to: 2)) ms"
                             )
                             Spacer()
                             #if os(iOS)
                                 Button(
                                     action: {  //Trash
-                                        if let cluster = qpingAppData
-                                            .clusterRunning
+                                        if uiState.clusterRunning.id != ClusterK8S.idINVALID
                                         {
-
-                                            cluster.resetCounter()
+                                            uiState.clusterRunning.resetCounter()
                                         }
-                                        qpingAppData.actualRTTns = 0.0  // Para resfrescar los datos.
+                                        uiState.actualRTTns = 0.0  // Para resfrescar los datos.
                                     },
                                     label: {
                                         HStack {
@@ -78,8 +78,7 @@ struct ChartNodeView: View {
                             #endif
                         }
                         Chart {
-                            ForEach(
-                                clusterRunning.qpingDataChart,
+                            ForEach(uiState.clusterRunning.kpingDataChart,
                                 id: \.timeReceived
                             ) { item in
                                 LineMark(
@@ -92,7 +91,7 @@ struct ChartNodeView: View {
                             RuleMark(  //Media
                                 y: .value(
                                     "med RTT",
-                                    qpingAppData.medRTTns / 1000
+                                    uiState.medRTTns / 1000
                                 )
                             )
                             .annotation(
@@ -100,7 +99,7 @@ struct ChartNodeView: View {
                                 alignment: .bottomLeading
                             ) {
                                 Text(
-                                    "med RTT \((qpingAppData.medRTTns/1000).fractionDigitsRounded(to: 1)) ms"
+                                    "med RTT \((uiState.medRTTns/1000).fractionDigitsRounded(to: 1)) ms"
                                 ).font(.system(size: 12))
                             }
                         }
@@ -112,25 +111,24 @@ struct ChartNodeView: View {
                                 .overlay(Color.gray)
                         #endif
                         HStack {
-                            Text("RTT: 0us").padding(
-                                EdgeInsets(
-                                    top: 5.0,
-                                    leading: 5.0,
-                                    bottom: 5.0,
-                                    trailing: 5.0
-                                )
-                            )
+//                            Text("RTT: 0us").padding(
+//                                EdgeInsets(
+//                                    top: 5.0,
+//                                    leading: 5.0,
+//                                    bottom: 5.0,
+//                                    trailing: 5.0
+//                                )
+//                            )
                             Spacer()
 
                             #if os(iOS)
                                 Button(
                                     action: {  //Trash
-                                        if let cluster = qpingAppData
-                                            .clusterRunning
+                                        if uiState.clusterRunning.id != ClusterK8S.idINVALID
                                         {
-                                            cluster.resetCounter()
+                                            uiState.clusterRunning.resetCounter()
                                         }
-                                        qpingAppData.actualRTTns = 0.0  // Para resfrescar los datos.
+                                        uiState.actualRTTns = 0.0  // Para resfrescar los datos.
                                     },
                                     label: {
                                         HStack {
@@ -172,11 +170,11 @@ struct ChartNodeView: View {
                         #if os(iOS)
                             Button(
                                 action: {  //Trash
-                                    if let cluster = qpingAppData.clusterRunning
+                                    if uiState.clusterRunning.id != ClusterK8S.idINVALID
                                     {
-                                        cluster.resetCounter()
+                                        uiState.clusterRunning.resetCounter()
                                     }
-                                    qpingAppData.actualRTTns = 0.0  // Para resfrescar los datos.
+                                    uiState.actualRTTns = 0.0  // Para resfrescar los datos.
                                 },
                                 label: {
                                     HStack {
@@ -204,6 +202,5 @@ struct ChartNodeView: View {
 }
 
 #Preview {
-    //@EnvironmentObject  var appData: AppData
-    ChartNodeView()
+    ChartNodeView().environment(UIState.shared)
 }

@@ -1,10 +1,10 @@
 //
 //  ClusterK8S.swift
-//  qping-gui
+//  kping-gui
 //
 //  Created by Alejandro Garcia on 18/2/24.
 //
-//  Copyright © 2023-2024 Alejandro Garcia <iacobus75@gmail.com>  <alejandro@kayros.uno>
+//  Copyright © 2023-2026 Alejandro Garcia <iacobus75@gmail.com>  <alejandro@kayros.uno>
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -26,50 +26,69 @@ import SwiftUI
 ///
 /// Clase ClusterK8
 ///
-//@Observable
+@Observable
 class ClusterK8S: Identifiable, Hashable {
 
     static func == (lhs: ClusterK8S, rhs: ClusterK8S) -> Bool {
         return lhs.id == rhs.id
     }
-    /// id de identificar único
-    let id: UUID
+    /// id de identificar único.
+    private(set) var id: UUID
+    
+    ///Invalid id (cluster not initialice)
+    static let idINVALID: UUID = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
+    
     /// Data ClusterK8SData
-    let clusterData: ClusterK8SData
+    private(set) var clusterData: ClusterK8SData
     /// String output
-    var qpingDataString = [
+    var kpingDataString = [
         RTTData(string: "", id: 0, timeReceived: uptime(), delay: 0.0)
     ]
     /// qpingData, array de RTTData para chart
-    var qpingDataChart = [
+    var kpingDataChart = [
         RTTData(string: "", id: 0, timeReceived: uptime(), delay: 0.0)
     ]
     /// Tiempo inicial
     var startTime = uptime()
-    
+    /// Protocolo a utilizar en la conexion
+    var kpingProtocol: String = "UDP+QUIC"
     ///Cluster state, refer to statoe
     var estadoCluster = "Stop"
+    //Send interval between pings in ns
+    var sendIntervalns = 1000 * 1000 * 1000//ns, default 1000ms=1seg
     /// Delay between send request
     //var delayns = 0.0  //ms
-    ///AppData, reference to update swiftUI
-    private var appData: KPingAppData?
-
+  
+    var qclient: QClient?
+    
     /// init ClusterK8S
-    init(clusterData: ClusterK8SData, appData: KPingAppData)  //Utilizar el mismo id del cluster que el modelo de datos ClusterK8SData
+    init(clusterData: ClusterK8SData)  //Utilizar el mismo id del cluster que el modelo de datos ClusterK8SData
     {
         self.clusterData = clusterData
         self.id = clusterData.id
-        self.appData = appData
+       // self.appData = appData
     }
 
+    //dummy initialzer
+    init()
+    {
+        self.clusterData = ClusterK8SData(id: ClusterK8S.idINVALID, name: "dummy", port: 0, nodes: [])
+        self.id = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
+    }
+    
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 
+    func setClusterData(clusterData: ClusterK8SData) {
+        self.clusterData = clusterData
+        self.id = clusterData.id
+    }
+    
     /// Resetear contadores
     func resetCounter() {
-        qpingDataChart.removeAll(keepingCapacity: true)
-        qpingDataString.removeAll(keepingCapacity: true)
+        kpingDataChart.removeAll(keepingCapacity: true)
+        kpingDataString.removeAll(keepingCapacity: true)
         startTime = 0
     }
 }
