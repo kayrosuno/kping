@@ -53,9 +53,9 @@ USER $USERNAME
 
 
 # Label docker image
-LABEL version="0.3.3"
+LABEL version="0.3.4"
 LABEL maintaner="Alejandro Garcia"
-LABEL release-date="07-12-2025"
+LABEL release-date="08-02-2026"
 #LABEL promoted="true"
 
 
