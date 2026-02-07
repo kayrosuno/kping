@@ -42,6 +42,66 @@ nonisolated func TimeNow() -> String
     
     return df.string(from: today)
 }
+///Time in us
+nonisolated func TimeNowDouble() -> Double
+{
+    return Date().timeIntervalSince1970 * 1000 * 1000
+}
+
+// Versión con formato personalizado
+nonisolated func formatUptime(_ microseconds: Double) -> String {
+    let seconds = microseconds / 1_000_000.0
+    let date = Date(timeIntervalSince1970: seconds)
+    
+    
+    // Formatear la fecha
+    let formatter = DateFormatter()
+    formatter.dateStyle = .medium
+    formatter.timeStyle = .medium
+    formatter.locale = Locale(identifier: "es_ES")
+    
+//    return formatter.string(from: date)
+//    let formatter = DateFormatter()
+//    formatter.dateFormat = format
+//    formatter.locale = Locale(identifier: "es_ES")
+    
+    return formatter.string(from: date)
+}
+
+
+
+//nonisolated func formatUptime(uptime: Double) -> String
+//{
+//    
+//    // Calcular la fecha de inicio del sistema
+//    let bootDate = Date(timeIntervalSinceNow: -uptime)
+//    
+//    Date(
+//
+//    // Formatear la fecha
+//    let formatter = DateFormatter()
+//    formatter.dateStyle = .medium
+//    formatter.timeStyle = .medium
+//    formatter.locale = Locale(identifier: "es_ES")
+//
+//    
+//    formatter.string(from: bootDate)
+//    
+//    //print("Tiempo de actividad: \(uptime) segundos")
+//    //print("El sistema se inició el: \(formatter.string(from: bootDate))")
+//
+//    // Alternativamente, puedes formatear el uptime como duración
+//    func formatUptime(_ seconds: TimeInterval) -> String {
+//        let days = Int(seconds) / 86400
+//        let hours = (Int(seconds) % 86400) / 3600
+//        let minutes = (Int(seconds) % 3600) / 60
+//        let secs = Int(seconds) % 60
+//        
+//        return String(format: "%d días, %02d:%02d:%02d", days, hours, minutes, secs)
+//    }
+//
+//    
+//}
 
 ///GENERAL:  print DEBUG if log level is set in QPing to QPingLogLevel.Debug
 nonisolated func printDEBUG(_ cadena: String) {

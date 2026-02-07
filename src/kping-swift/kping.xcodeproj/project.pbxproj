@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXCopyFilesBuildPhase section */
+		A9C97B312F22E1FE00811083 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		A9D1DB0A2B0197EC00EA545C /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -22,10 +31,19 @@
 		A91ACC852DB2D50300351555 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A96821412EF766B60046E34D /* kping-5g-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "kping-5g-Info.plist"; sourceTree = "<group>"; };
 		A96821D32EF773530046E34D /* kpingApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kpingApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A9C97B332F22E1FE00811083 /* kping-async */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "kping-async"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9D1DB0C2B0197EC00EA545C /* kping */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = kping; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A95B7CF62F376DB2002A8555 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"QClient-async.swift",
+				"QServer-async.swift",
+			);
+			target = A96821D22EF773530046E34D /* kpingApp */;
+		};
 		A96822352EF775630046E34D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -50,15 +68,35 @@
 			);
 			target = A9D1DB0B2B0197EC00EA545C /* kping */;
 		};
+		A9C97B3B2F22E23600811083 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				KPingState.swift,
+				main.swift,
+				QError.swift,
+				QServerClientConnection.swift,
+				RTTQUIC.swift,
+				Utilidades.swift,
+			);
+			target = A9C97B322F22E1FE00811083 /* kping-async */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		A95B7CF52F376DB2002A8555 /* kping-aync */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (A95B7CF62F376DB2002A8555 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "kping-aync"; sourceTree = "<group>"; };
 		A96821D42EF773530046E34D /* kpingApp */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (A968223B2EF775A10046E34D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = kpingApp; sourceTree = "<group>"; };
-		A968222B2EF774650046E34D /* kping-cli */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (A96822352EF775630046E34D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "kping-cli"; sourceTree = "<group>"; };
+		A968222B2EF774650046E34D /* kping-cli */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (A96822352EF775630046E34D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, A9C97B3B2F22E23600811083 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "kping-cli"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A96821D02EF773530046E34D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A9C97B302F22E1FE00811083 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -80,6 +118,7 @@
 			children = (
 				A91ACC852DB2D50300351555 /* README.md */,
 				A96821412EF766B60046E34D /* kping-5g-Info.plist */,
+				A95B7CF52F376DB2002A8555 /* kping-aync */,
 				A968222B2EF774650046E34D /* kping-cli */,
 				A96821D42EF773530046E34D /* kpingApp */,
 				A9D1DB0D2B0197EC00EA545C /* Products */,
@@ -91,6 +130,7 @@
 			children = (
 				A9D1DB0C2B0197EC00EA545C /* kping */,
 				A96821D32EF773530046E34D /* kpingApp.app */,
+				A9C97B332F22E1FE00811083 /* kping-async */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -111,6 +151,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				A95B7CF52F376DB2002A8555 /* kping-aync */,
 				A96821D42EF773530046E34D /* kpingApp */,
 			);
 			name = kpingApp;
@@ -119,6 +160,25 @@
 			productName = kpingApp;
 			productReference = A96821D32EF773530046E34D /* kpingApp.app */;
 			productType = "com.apple.product-type.application";
+		};
+		A9C97B322F22E1FE00811083 /* kping-async */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A9C97B392F22E1FE00811083 /* Build configuration list for PBXNativeTarget "kping-async" */;
+			buildPhases = (
+				A9C97B2F2F22E1FE00811083 /* Sources */,
+				A9C97B302F22E1FE00811083 /* Frameworks */,
+				A9C97B312F22E1FE00811083 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "kping-async";
+			packageProductDependencies = (
+			);
+			productName = "kping-cli2";
+			productReference = A9C97B332F22E1FE00811083 /* kping-async */;
+			productType = "com.apple.product-type.tool";
 		};
 		A9D1DB0B2B0197EC00EA545C /* kping */ = {
 			isa = PBXNativeTarget;
@@ -153,6 +213,9 @@
 					A96821D22EF773530046E34D = {
 						CreatedOnToolsVersion = 26.2;
 					};
+					A9C97B322F22E1FE00811083 = {
+						CreatedOnToolsVersion = 26.2;
+					};
 					A9D1DB0B2B0197EC00EA545C = {
 						CreatedOnToolsVersion = 15.1;
 					};
@@ -173,6 +236,7 @@
 			targets = (
 				A9D1DB0B2B0197EC00EA545C /* kping */,
 				A96821D22EF773530046E34D /* kpingApp */,
+				A9C97B322F22E1FE00811083 /* kping-async */,
 			);
 		};
 /* End PBXProject section */
@@ -189,6 +253,13 @@
 
 /* Begin PBXSourcesBuildPhase section */
 		A96821CF2EF773530046E34D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A9C97B2F2F22E1FE00811083 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -227,7 +298,7 @@
 				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
 				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
 				ENABLE_RESOURCE_ACCESS_USB = NO;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -240,10 +311,10 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 0.3.4;
 				PRODUCT_BUNDLE_IDENTIFIER = uno.kayros.kping;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -257,7 +328,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				XROS_DEPLOYMENT_TARGET = 2.6;
+				XROS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -283,7 +354,7 @@
 				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
 				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
 				ENABLE_RESOURCE_ACCESS_USB = NO;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -296,10 +367,10 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 0.3.4;
 				PRODUCT_BUNDLE_IDENTIFIER = uno.kayros.kping;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -313,7 +384,35 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				XROS_DEPLOYMENT_TARGET = 2.6;
+				XROS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+		A9C97B372F22E1FE00811083 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AK37TK8X2Y;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A9C97B382F22E1FE00811083 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AK37TK8X2Y;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -479,6 +578,15 @@
 			buildConfigurations = (
 				A96821DC2EF773540046E34D /* Debug */,
 				A96821DD2EF773540046E34D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A9C97B392F22E1FE00811083 /* Build configuration list for PBXNativeTarget "kping-async" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A9C97B372F22E1FE00811083 /* Debug */,
+				A9C97B382F22E1FE00811083 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

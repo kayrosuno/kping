@@ -40,7 +40,7 @@ class UIState{
     var vistaActiva = TipoVistaActiva.root
     
     /// Cluster seleccionado en sidebarview. Listado de clusterData.
-    var UUIDSelectedCluster = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
+    var UUIDSelectedCluster: UUID? = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
     
     /// Cluster que se está editando
     var editCluster = ClusterK8S()
@@ -55,16 +55,6 @@ class UIState{
     var sidebarbackground: (any View)?
     // var selectionProtocol = "QUIC+UDP"
     // var nodeSelected = ""
-    
-    //Para visualizar, datos en clusterk8s, el view debe de estar asociado a un objeto observble.
-    /// Min RTT del cluster
-    var minRTTns = 0.0
-    ///medRTT
-    var medRTTns = 0.0
-    /// Max RTT del cluster
-    var maxRTTns = 0.0
-    /// Last RTT del cluster
-    var actualRTTns = 0.0
        
     /// Time de actualizacon datos del GUI
     var timestamp: String = TimeNow()
@@ -73,7 +63,7 @@ class UIState{
     //var sendIntervalns = 1000 * 1000 * 1000//ns, default 1000ms=1seg
     
     /// qclient
-    var qclient: QClient?
+    //var qclient: QClient?
     
     private init() {}
     

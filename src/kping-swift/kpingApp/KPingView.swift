@@ -24,6 +24,13 @@ import SwiftUI
 
 struct KPingView: View {
     @Environment(UIState.self) private var uiState
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    private var isCompact: Bool { horizontalSizeClass == .compact }
+    #else
+    private let isCompact = false
+    #endif
+
     //@Environment(ClusterK8S.self) private var clusterRunning
     
     #if os(iOS)
@@ -42,27 +49,27 @@ struct KPingView: View {
                         HStack {
                             Gauge(
                                 value: Double(
-                                    (uiState.actualRTTns / 1000).fractionDigitsRounded(
+                                    (uiState.clusterRunning.actualRTTns / 1000).fractionDigitsRounded(
                                         to: 1
                                     )
                                 ) ?? 0.0,
-                                in: 0.0...(uiState.maxRTTns / 1000) + 1
+                                in: 0.0...(uiState.clusterRunning.maxRTTns / 1000) + 1
                             ) {
                                 Image(systemName: "heart.fill")
                                     .foregroundColor(.red)
                             } currentValueLabel: {
                                 Text(
-                                    "\((uiState.actualRTTns/1000).fractionDigitsRounded(to: 1))"
+                                    "\((uiState.clusterRunning.actualRTTns/1000).fractionDigitsRounded(to: 1))"
                                 )
                                 .foregroundColor(Color.green)
                             } minimumValueLabel: {
                                 Text(
-                                    "\((uiState.minRTTns/1000).fractionDigitsRounded(to: 0))"
+                                    "\((uiState.clusterRunning.minRTTns/1000).fractionDigitsRounded(to: 0))"
                                 )
                                 .foregroundColor(Color.blue)
                             } maximumValueLabel: {
                                 Text(
-                                    "\((uiState.maxRTTns/1000).fractionDigitsRounded(to: 0))"
+                                    "\((uiState.clusterRunning.maxRTTns/1000).fractionDigitsRounded(to: 0))"
                                 )
                                 .foregroundColor(Color.red)
                             }
@@ -79,7 +86,7 @@ struct KPingView: View {
                             
                             Spacer()
                             Text(
-                                "min RTT: \((uiState.minRTTns/1000).fractionDigitsRounded(to: 1)) ms"
+                                "min RTT: \((uiState.clusterRunning.minRTTns/1000).fractionDigitsRounded(to: 1)) ms"
                             ).multilineTextAlignment(.leading).padding(
                                 EdgeInsets(
                                     top: 5.0,
@@ -90,7 +97,7 @@ struct KPingView: View {
                             ).foregroundColor(.blue)
                             Spacer()
                             Text(
-                                "med RTT: \((uiState.medRTTns/1000).fractionDigitsRounded(to: 1)) ms"
+                                "med RTT: \((uiState.clusterRunning.medRTTns/1000).fractionDigitsRounded(to: 1)) ms"
                             ).multilineTextAlignment(.leading).padding(
                                 EdgeInsets(
                                     top: 5.0,
@@ -101,7 +108,7 @@ struct KPingView: View {
                             ).foregroundColor(.green)
                             Spacer()
                             Text(
-                                "max RTT: \((uiState.maxRTTns/1000).fractionDigitsRounded(to: 1)) ms"
+                                "max RTT: \((uiState.clusterRunning.maxRTTns/1000).fractionDigitsRounded(to: 1)) ms"
                             ).multilineTextAlignment(.leading).padding(
                                 EdgeInsets(
                                     top: 5.0,
@@ -118,16 +125,15 @@ struct KPingView: View {
                                 Divider()
                                     .overlay(Color.gray)
 #endif
-                                HStack {
-                                    Text("\(uiState.timestamp)")
-                                    Spacer()
+                                HStack(spacing: 0){
 #if os(iOS)
+                                    Spacer()
                                     Button(
                                         action: {  //Trash
                                             if uiState.clusterRunning.id != ClusterK8S.idINVALID {
                                                 uiState.clusterRunning.resetCounter()
                                             }
-                                            uiState.actualRTTns = 0.0  // Para resfrescar los datos.
+                                            uiState.clusterRunning.actualRTTns = 0.0  // Para resfrescar los datos.
                                         },
                                         label: {
                                             HStack {
@@ -136,18 +142,20 @@ struct KPingView: View {
                                             }
                                         }
                                     )
-                                    
-                                    .frame(maxWidth: 93, alignment: .trailing)
-                                    .padding(
-                                        EdgeInsets(
-                                            top: 5.0,
-                                            leading: 0.0,
-                                            bottom: 5.0,
-                                            trailing: 0
-                                        )
-                                    )
+                                    .frame(maxWidth: 93, alignment: .leading)
+                                   
+//                                    .padding(
+//                                        EdgeInsets(
+//                                            top: 5.0,
+//                                            leading: 0.0,
+//                                            bottom: 5.0,
+//                                            trailing: 0
+//                                        )
+//                                    )
 #endif
-                                } .padding(
+                                }
+                                #if os(macOS)
+                                .padding(
                                     EdgeInsets(
                                         top: 0.0,
                                         leading: 5.0,
@@ -155,30 +163,65 @@ struct KPingView: View {
                                         trailing: 5.0
                                     )
                                 )
+                                #endif
                                 
-                                ScrollView {
-                                    //HStack{
-                                    ForEach(uiState.clusterRunning.kpingDataString) { item in
-                                        HStack {
-                                            Text(item.string).multilineTextAlignment(
-                                                .leading
+                                    HStack {
+#if os(iOS)
+                                        Table(uiState.clusterRunning.kpingDataString)
+                                        {
+                                            TableColumn("id"){
+                                                if isCompact {
+                                                    Text("\($0.string)")
+                                                }
+                                                else
+                                                {
+                                                    Text("\($0.id)")
+                                                }
+                                            }
+                                            TableColumn("TimeReceived"){Text(formatUptime($0.timeReceived))}
+                                            TableColumn("Delay"){Text("\(String(format: "%.2f", ($0.delay/1000))) ms")}
+                                            TableColumn("RTT"){Text("\(String(format: "%.2f", ($0.rtt/1000))) ms")}
+                                            TableColumn("String", value: \.string)
+                                        }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                                            .padding(
+                                                EdgeInsets(
+                                                    top: 0.0,
+                                                    leading: 0.0,
+                                                    bottom: 0.0,
+                                                    trailing: 0
+                                                )
                                             )
-                                            Spacer()
+                                        Spacer()
+                                        
+//                                        ScrollView {
+//                                            LazyVStack(alignment: .leading) {
+//                                                ForEach(uiState.clusterRunning.kpingDataString, id: \.self) {
+//                                                    Text("\($0.id)+\($0.timeReceived)+\($0.delay)+\($0.rtt)")
+//                                                }
+//                                            }
+//                                        }
+
+#else
+                                        Table(uiState.clusterRunning.kpingDataString)
+                                        {
+                                            TableColumn("id"){Text("\($0.id)")}.width(min: 10, ideal: 30, max:50)
+                                            TableColumn("TimeReceived"){Text(formatUptime($0.timeReceived))}.width(min: 70, ideal: 100, max:150)
+                                            TableColumn("Delay"){Text("\(String(format: "%.2f", ($0.delay/1000))) ms")}.width(min: 30, ideal: 50, max:120)
+                                            TableColumn("RTT"){Text("\(String(format: "%.2f", ($0.rtt/1000))) ms")}.width(min: 30, ideal: 50, max:120)
+                                            TableColumn("String", value: \.string).width(min: 120, ideal: 200, max:1200)
                                         }
-                                        .padding(
-                                            EdgeInsets(
-                                                top: 0.0,
-                                                leading: 5.0,
-                                                bottom: 0.0,
-                                                trailing: 5.0
-                                            )
+#endif
+                                    }  .frame(alignment: .leading)
+                                    .padding(
+                                        EdgeInsets(
+                                            top: 0.0,
+                                            leading: 0.0,
+                                            bottom: 0.0,
+                                            trailing: 0
                                         )
-                                        .frame(maxWidth: .infinity)
-                                    }
-                                }.defaultScrollAnchor(.bottom)
+                                    )
                             }
                         } else {
-                            
                             VStack {
                                 HStack {
                                     Text("Estado: Stop").multilineTextAlignment(.leading)
@@ -190,6 +233,7 @@ struct KPingView: View {
                                                 trailing: 5.0
                                             )
                                         )
+                                    TablaDummy()
                                     Spacer()
                                 }
                                 Spacer()
@@ -203,25 +247,61 @@ struct KPingView: View {
                         Divider()
                             .overlay(Color.gray)
 #endif
-                        HStack {
-                            Text("").padding(
-                                EdgeInsets(
-                                    top: 5.0,
-                                    leading: 5.0,
-                                    bottom: 5.0,
-                                    trailing: 5.0
-                                )
-                            )
-                            Spacer()
-                        }}
+                        TablaDummy()
+                    }
                 }
             }
             else {
-                Text("")
+                Text("State: STOP")
             }
+        }
+        else{
+            Text("State: STOP")
         }
     }
 }
+
+
+struct TablaDummy: View {
+#if os(iOS)
+@Environment(\.horizontalSizeClass) private var horizontalSizeClass
+private var isCompact: Bool { horizontalSizeClass == .compact }
+#else
+private let isCompact = false
+#endif
+    let datos = [RTTData(string: "",/*id: 1,*/timeReceived: 0.0, delay: 0.0, rtt:0.0)]
+    
+    var body: some View {
+#if os(iOS)
+        Table(datos)
+        {
+            TableColumn("id"){
+                if isCompact {
+                    Text("\(formatUptime($0.timeReceived)) \(String(format: "%.2f", ($0.delay/1000)))ms \(String(format: "%.2f", ($0.rtt/1000)))ms \($0.string)")
+                }
+                else
+                {
+                    Text("\($0.id)")
+                }
+            }
+            TableColumn("TimeReceived"){Text(formatUptime($0.timeReceived))}
+            TableColumn("Delay"){Text("\(String(format: "%.2f", ($0.delay/1000))) ms")}
+            TableColumn("RTT"){Text("\(String(format: "%.2f", ($0.rtt/1000))) ms")}
+            TableColumn("String", value: \.string)
+        }
+#else
+        Table(datos)
+        {
+            TableColumn("id"){Text("\($0.id)")}.width(min: 10, ideal: 30, max:50)
+            TableColumn("TimeReceived"){Text("\($0.timeReceived)")}.width(min: 30, ideal: 50, max:70)
+            TableColumn("Delay"){Text("\($0.delay)")}.width(min: 30, ideal: 50, max:70)
+            TableColumn("RTT"){Text("\($0.delay)")}.width(min: 30, ideal: 50, max:70)
+            TableColumn("String", value: \.string).width(min: 120, ideal: 200, max:1200)
+        }
+#endif
+    }
+}
+
 
 //#Preview {
 //    KPingView().environment(UIState.shared)

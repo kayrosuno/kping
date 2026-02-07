@@ -27,29 +27,29 @@ import SwiftUI
 /// Clase ClusterK8
 ///
 @Observable
-class ClusterK8S: Identifiable, Hashable {
+final class ClusterK8S: @unchecked Sendable, Identifiable, Hashable {
 
     static func == (lhs: ClusterK8S, rhs: ClusterK8S) -> Bool {
         return lhs.id == rhs.id
     }
     /// id de identificar único.
-    private(set) var id: UUID
+    let id: UUID
     
     ///Invalid id (cluster not initialice)
     static let idINVALID: UUID = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
     
     /// Data ClusterK8SData
-    private(set) var clusterData: ClusterK8SData
+    let clusterData: ClusterK8SData
     /// String output
-    var kpingDataString = [
-        RTTData(string: "", id: 0, timeReceived: uptime(), delay: 0.0)
+    var kpingDataString:[RTTData] = [
+       // RTTData(string: "", /*id: 0,*/ timeReceived: uptime(), delay: 0.0, rtt: 0.0)
     ]
     /// qpingData, array de RTTData para chart
-    var kpingDataChart = [
-        RTTData(string: "", id: 0, timeReceived: uptime(), delay: 0.0)
+    var kpingDataChart:[RTTData] = [
+       // RTTData(string: "", /*id: 0, */timeReceived: uptime(), delay: 0.0, rtt: 0.0)
     ]
     /// Tiempo inicial
-    var startTime = uptime()
+    //var startTime = uptime()
     /// Protocolo a utilizar en la conexion
     var kpingProtocol: String = "UDP+QUIC"
     ///Cluster state, refer to statoe
@@ -58,7 +58,18 @@ class ClusterK8S: Identifiable, Hashable {
     var sendIntervalns = 1000 * 1000 * 1000//ns, default 1000ms=1seg
     /// Delay between send request
     //var delayns = 0.0  //ms
-  
+    //Para visualizar, datos en clusterk8s, el view debe de estar asociado a un objeto observble.
+    /// Min RTT del cluster
+    var minRTTns = 0.0
+    ///medRTT
+    var medRTTns = 0.0
+    /// Max RTT del cluster
+    var maxRTTns = 0.0
+    /// Last RTT del cluster
+    var actualRTTns = 0.0
+    ///Counter
+    private(set) var idCounter: Int64 = 0
+    /// QCLient
     var qclient: QClient?
     
     /// init ClusterK8S
@@ -80,15 +91,22 @@ class ClusterK8S: Identifiable, Hashable {
         hasher.combine(id)
     }
 
-    func setClusterData(clusterData: ClusterK8SData) {
-        self.clusterData = clusterData
-        self.id = clusterData.id
-    }
+//    func setClusterData(clusterData: ClusterK8SData) {
+//        self.clusterData = clusterData
+//        self.id = clusterData.id
+//    }
     
     /// Resetear contadores
     func resetCounter() {
         kpingDataChart.removeAll(keepingCapacity: true)
         kpingDataString.removeAll(keepingCapacity: true)
-        startTime = 0
+        //startTime = 0
+    }
+    
+    func getCounterAndInc() -> Int64 {
+        let counter = idCounter
+        idCounter = idCounter + 1
+        
+        return counter
     }
 }

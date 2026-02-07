@@ -47,7 +47,7 @@ struct ChartNodeView: View {
                         #endif
                         HStack {
                             Text(
-                                "RTT: \((uiState.actualRTTns/1000).fractionDigitsRounded(to: 2)) ms"
+                                "RTT: \((uiState.clusterRunning.actualRTTns/1000).fractionDigitsRounded(to: 2)) ms"
                             )
                             Spacer()
                             #if os(iOS)
@@ -57,7 +57,7 @@ struct ChartNodeView: View {
                                         {
                                             uiState.clusterRunning.resetCounter()
                                         }
-                                        uiState.actualRTTns = 0.0  // Para resfrescar los datos.
+                                        uiState.clusterRunning.actualRTTns = 0.0  // Para resfrescar los datos.
                                     },
                                     label: {
                                         HStack {
@@ -91,7 +91,7 @@ struct ChartNodeView: View {
                             RuleMark(  //Media
                                 y: .value(
                                     "med RTT",
-                                    uiState.medRTTns / 1000
+                                    uiState.clusterRunning.medRTTns / 1000
                                 )
                             )
                             .annotation(
@@ -99,7 +99,7 @@ struct ChartNodeView: View {
                                 alignment: .bottomLeading
                             ) {
                                 Text(
-                                    "med RTT \((uiState.medRTTns/1000).fractionDigitsRounded(to: 1)) ms"
+                                    "med RTT \((uiState.clusterRunning.medRTTns/1000).fractionDigitsRounded(to: 1)) ms"
                                 ).font(.system(size: 12))
                             }
                         }
@@ -128,7 +128,7 @@ struct ChartNodeView: View {
                                         {
                                             uiState.clusterRunning.resetCounter()
                                         }
-                                        uiState.actualRTTns = 0.0  // Para resfrescar los datos.
+                                        uiState.clusterRunning.actualRTTns = 0.0  // Para resfrescar los datos.
                                     },
                                     label: {
                                         HStack {
@@ -174,7 +174,7 @@ struct ChartNodeView: View {
                                     {
                                         uiState.clusterRunning.resetCounter()
                                     }
-                                    uiState.actualRTTns = 0.0  // Para resfrescar los datos.
+                                    uiState.clusterRunning.actualRTTns = 0.0  // Para resfrescar los datos.
                                 },
                                 label: {
                                     HStack {

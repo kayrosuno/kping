@@ -26,7 +26,7 @@ import SwiftData
 /// Modelo de datos para swiftdata con la información de los Clusters/nodes
 ///
 @Model
-class ClusterK8SData: Identifiable, Hashable{
+final class ClusterK8SData: @unchecked Sendable, Identifiable, Hashable{
     @Attribute(.unique) var id: UUID
     var name: String
     var port: UInt16 = 25450    //Default port

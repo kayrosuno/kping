@@ -36,14 +36,25 @@ struct RTTData: Hashable, Identifiable
     // var timeSend: Double = 0.0
     var timeReceived: Double = 0.0
     var delay: Double = 0.0
+    var rtt: Double = 0.0
     var string: String = ""
     var id:Int64  = 0
+    static nonisolated(unsafe) private var incId: Int64 = 0
     
-    init(string: String, id: Int64, timeReceived: Double, delay: Double) {
+//    init(string: String, id: Int64, timeReceived: Double, delay: Double) {
+//        self.string = string
+//        self.id = id
+//        self.timeReceived = timeReceived
+//        self.delay = delay
+//    }
+    
+    init(string: String, timeReceived: Double, delay: Double, rtt: Double) {
         self.string = string
-        self.id = id
+        self.id = RTTData.incId
         self.timeReceived = timeReceived
         self.delay = delay
+        self.rtt = rtt
+        RTTData.incId = RTTData.incId + 1
     }
     
     func hash(into hasher: inout Hasher) {

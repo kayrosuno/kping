@@ -31,11 +31,10 @@ actor QClient {
     private let host: NWEndpoint.Host
     /// remote port
     private let port: NWEndpoint.Port
-
+    /// Networking queue for receive events
+    //private let networkQueue: DispatchQueue?
     /// Network connection using QUIC
-    private(set) var nwConnection: NWConnection?
-    ///networking queue
-    private let networkQueue: DispatchQueue?
+    private(set) var nwConnection: NetworkConnection<QUICStream>
     /// kping internal state
     let kpingState: KPingState
     ///handleClientConnectionStateChanged, An external optional handle for GUI to notify change of state in the connection.
@@ -55,11 +54,18 @@ actor QClient {
     {
         self.host = NWEndpoint.Host(host)
         self.port = NWEndpoint.Port(rawValue: port)!
-        
+               
         //NetworkQueue
-        self.networkQueue = DispatchQueue(label: "uno.kayros.kping.server")
+        //self.networkQueue = DispatchQueue(label: "uno.kayros.kping.server")
+        
         self.kpingState = KPingState()
         self.isGUI = false
+        
+//        Task{
+//            //await kpingState.setQClient(qclient: self)
+//            self.clusterRunning = ClusterK8S()
+//        }
+    
     }
     
     //dummy init
@@ -69,9 +75,8 @@ actor QClient {
         self.port = NWEndpoint.Port(rawValue: 0)!
         self.kpingState = KPingState()
         self.isGUI = false
-       
         //NetworkQueue
-        self.networkQueue = DispatchQueue(label: "uno.kayros.kping.server")
+        //self.networkQueue = DispatchQueue(label: "uno.kayros.kping.server")
     }
     
     ///Initialize the network connection from GUI. Call it just after create the class.
@@ -116,47 +121,49 @@ actor QClient {
         let quicOptions = NWProtocolQUIC.Options(alpn: ["kayros.uno"])
         quicOptions.direction = .bidirectional
         quicOptions.idleTimeout = KPingState.CONNECTION_TIMEOUT
-        let securityProtocolOptions: sec_protocol_options_t = quicOptions
-            .securityProtocolOptions
-        sec_protocol_options_set_verify_block(
-            securityProtocolOptions,
-            {
-                (
-                    _: sec_protocol_metadata_t,
-                    _: sec_trust_t,
-                    complete: @escaping sec_protocol_verify_complete_t
-                ) in
-                complete(true)
-            },
-            networkQueue!
-        )
+//        let securityProtocolOptions: sec_protocol_options_t = quicOptions
+//            .securityProtocolOptions
+//        sec_protocol_options_set_verify_block(
+//            securityProtocolOptions,
+//            {
+//                (
+//                    _: sec_protocol_metadata_t,
+//                    _: sec_trust_t,
+//                    complete: @escaping sec_protocol_verify_complete_t
+//                ) in
+//                complete(true)
+//            },
+//            networkQueue!
+//        )
         let quicParameter = NWParameters(quic: quicOptions)
 
-        //Network connection
-        nwConnection = NWConnection(
-            host: self.host,
-            port: self.port,
-            using: quicParameter
-        )
-
-        if (nwConnection == nil)
-        {
-            print("* Error creating NWConnection")
-            exit(-1)
-            
+        nwConnection = NetworkConnection(to: .hostPort(host: host, port: port)){
+          
+            QUIC(alpn: ["kayros.uno"]).idleTimeout(KPingState.CONNECTION_TIMEOUT)
+            {
+                UDP()
+            }
         }
-        
-        //handle de cambio de estado
-        nwConnection!.stateUpdateHandler = handleClientConnectionStateChanged ?? self.clientCLIHandleConnectionStateChanged(to:)
+   
+        //Network connection
+//        nwConnection = NWConnection(
+//            host: self.host,
+//            port: self.port,
+//            using: quicParameter
+//        )
 
-        //Establecer la funcion de recepción
-        nwConnection!.receive(
-            minimumIncompleteLength: 10,
-            maximumLength: KPingState.MTU,
-            completion: handleClientReceiveData ?? self.clientCLIHandleReceiveData(_:_:_:_:) )
-              
-        //start Connection to remote server
-        nwConnection?.start(queue: networkQueue!)
+       
+//        //handle de cambio de estado
+//        nwConnection!.stateUpdateHandler = handleClientConnectionStateChanged ?? self.clientCLIHandleConnectionStateChanged(to:)
+//
+//        //Establecer la funcion de recepción
+//        nwConnection!.receive(
+//            minimumIncompleteLength: 10,
+//            maximumLength: KPingState.MTU,
+//            completion: handleClientReceiveData ?? self.clientCLIHandleReceiveData(_:_:_:_:) )
+//              
+//        //start Connection to remote server
+//        nwConnection?.start(queue: networkQueue!)
 
         //id
         var iteration:Int64 = 1
@@ -197,16 +204,22 @@ actor QClient {
                     return try encoder.encode(rtt_data)
                 }
                 
-                //Send data to qping server
-                nwConnection?.send(content: json_data, completion: .contentProcessed({ error in
-                    if error != nil {
-                        print("Send error: " + error!.localizedDescription)
-                        
-                        //Para loop
-                        Task{ await self.kpingState.setClientLoop(false)}
-                    }
-                }
-                ))
+//                //Send data to qping server
+//                nwConnection?.send(content: json_data, completion: .contentProcessed({ error in
+//                    if error != nil {
+//                        print("Send error: " + error!.localizedDescription)
+//                        
+//                        //Para loop
+//                        Task{ await self.kpingStatee.setClientLoop(false)}
+//                    }
+//                }
+//                ))
+                
+                let outgoingData = Data("Hello, world!".utf8)
+                try await nwConnection.send(outgoingData)
+//                try await nwConnection.s
+//                    .send(json_data)
+               
 
                 iteration += 1
 
@@ -327,7 +340,7 @@ actor QClient {
                     //let data_string =  String(data: data, encoding: .utf8) ?? "null"
                     //let rtt_time = Double(round( rtt_result.Time_server!.timeIntervalSince(rtt_result.Time_client!)*1000 )/1000)
                     
-                    let delay =  rtt_result.Time_server - rtt_result.Time_client
+                    let delay =  rtt_result.Time_client - rtt_result.Time_server
                     let rtt_time = TimeNowDouble() - Double(rtt_result.Time_client)
                     
                     //let rtt_time = Double( rtt_result.Time_server!.timeIntervalSince(rtt_result.Time_client!))
@@ -336,7 +349,7 @@ actor QClient {
                     // let time_received = rtt_result.Time_server
                     
                     /* Time_send=\(time_send) Time_receive=\(time_received) */
-                    let now = TimeNow()
+                    let now = TimeNowDouble()
                     print("\(now) id=\(rtt_result.Id) Delay=\(delay)us RTT=\(rtt_time)us")
                     //GUI?? SendData(timeReceive: uptime(), rtt: Double(rtt_time))
                     
