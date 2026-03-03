@@ -5,7 +5,7 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - name: kping-quic-udp
+  - name: kping-udp-quic
     port: 25450  
     nodePort: 30450
     targetPort: 25450
@@ -15,5 +15,10 @@ spec:
     nodePort: 30450
     targetPort: 25450
     protocol: TCP
+  - name: kping-udp
+    port: 25451
+    nodePort: 30451
+    targetPort: 25451
+    protocol: UDP
   selector:
     app: kping-server

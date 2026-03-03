@@ -36,14 +36,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A95B7CF62F376DB2002A8555 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"QClient-async.swift",
-				"QServer-async.swift",
-			);
-			target = A96821D22EF773530046E34D /* kpingApp */;
-		};
 		A96822352EF775630046E34D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -83,7 +75,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		A95B7CF52F376DB2002A8555 /* kping-aync */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (A95B7CF62F376DB2002A8555 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "kping-aync"; sourceTree = "<group>"; };
+		A95B7CF52F376DB2002A8555 /* kping-aync */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "kping-aync"; sourceTree = "<group>"; };
 		A96821D42EF773530046E34D /* kpingApp */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (A968223B2EF775A10046E34D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = kpingApp; sourceTree = "<group>"; };
 		A968222B2EF774650046E34D /* kping-cli */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (A96822352EF775630046E34D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, A9C97B3B2F22E23600811083 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "kping-cli"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */

@@ -20,5 +20,12 @@ spec:
         image: kayrosuno/kping:latest
         ports:
         - containerPort: 25450
+          protocol: TCP
+          name: "tcp"
+        - containerPort: 25450
+          protocol: UDP
+          name: "quic-udp"
         - containerPort: 25451
+          protocol: UDP
+          name: "udp only"
         imagePullPolicy: Always

@@ -45,8 +45,8 @@ func Execute() {
 // serverCmd represents the server command
 var serverCmd = &cobra.Command{
 	Use:   "server <port>",
-	Short: "Start kping in server mode to listen for UDP, UDP/QUIC or TCP connections",
-	Long: `Start kping in server mode to listen for UDP, UDP/QUIC or TCP connections using 
+	Short: "Start kping in SERVER MODE to listen for UDP, UDP/QUIC, TCP or SCTP connections",
+	Long: `Start kping in SERVER MODE to listen for UDP, UDP/QUIC, TCP or SCTP connections using 
 	the default port to listen for clients, the port must by greater > than 1024.`,
 	Args: func(cmd *cobra.Command, args []string) error {
 
@@ -65,7 +65,7 @@ var serverCmd = &cobra.Command{
 
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		qserver(args)
+		kserver(args)
 	},
 }
 
@@ -98,7 +98,7 @@ with a time mark to measure on the client the RTT. You can increase the delay be
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		//QClient(true, args)
+		//KClient(true, args)
 	},
 }
 
@@ -129,7 +129,7 @@ var TCPCmd = &cobra.Command{
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		QClient(false, false, args)
+		KClient(false, false, false, args)
 	},
 }
 
@@ -160,7 +160,7 @@ var UDPCmd = &cobra.Command{
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		QClient(false, true, args)
+		KClient(false, true, false, args)
 	},
 }
 
@@ -191,7 +191,38 @@ var QUICCmd = &cobra.Command{
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		QClient(true, true, args)
+		KClient(true, true, false, args)
+	},
+}
+
+// TCPCmd represents the base command when called without any subcommands
+var SCTPCmd = &cobra.Command{
+	Use:   "sctp <host:port>",
+	Short: "Start kping in SCTP client mode to send request to SCTP kping server. Use: kping sctp <ipv4:port>",
+	Long:  `kping is a test program written in go to verify RTT. This mode use a SCTP connection to make a connection to a kping acting as server.`,
+	Args: func(cmd *cobra.Command, args []string) error {
+
+		// Optionally run one of the validators provided by cobra
+		if err := cobra.MinimumNArgs(1)(cmd, args); err != nil {
+			return err
+		}
+
+		// Check UDP address for QUIC
+		_, err := net.ResolveUDPAddr("udp", args[0])
+		if err != nil {
+			return err
+		}
+
+		// if(udpAddr.IP)
+		// //return net.ListenUDP("udp", udpAddr)
+		return nil
+
+		//return fmt.Errorf("invalid color specified: %s", args[0])
+	},
+	// Uncomment the following line if your bare application
+	// has an action associated with it:
+	Run: func(cmd *cobra.Command, args []string) {
+		KClient(false, false, true, args)
 	},
 }
 
@@ -214,6 +245,7 @@ func init() {
 	rootCmd.AddCommand(QUICCmd)
 	rootCmd.AddCommand(UDPCmd)
 	rootCmd.AddCommand(TCPCmd)
+	rootCmd.AddCommand(SCTPCmd)
 	rootCmd.AddCommand(serverCmd)
 
 	// Here you will define your flags and configuration settings.

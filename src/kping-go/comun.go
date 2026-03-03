@@ -1,5 +1,5 @@
 /*
-Copyright © 2023-2024 Alejandro Garcia (iacobus75@gmail.com)
+Copyright © 2023-2026 Alejandro Garcia (iacobus75@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ const iPortDefault int = 25450 //Puerto por defecto de escucha
 // const message = "Mensaje de prueba" //Mensaje de prueba por defecto
 // var wg sync.WaitGroup               //grupo de sincronización de threads
 var Program = "kping"   //Nombre del programa
-var Version = "0.3.4"   //Version actual
+var Version = "0.3.5"   //Version actual
 const maxMessage = 1024 //Longitud en bytes maximo del mensaje
 const MAX_TIME_READ_DEADLINE = time.Second * 5
 

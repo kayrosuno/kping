@@ -11,10 +11,8 @@ Dentro del repositorio eliminar las templates creadas por defecto
 Despues creamos las templates que se ejecutaran en kubernetes, por ejemplo
 el namespace.yaml para crear un namespace
 deployment.yaml para crear un deployment
-service.yaml para crar un servicio
-
-en el directorio raiz del chart debe de haber:
-Chart.yaml para contenr la version de la aplicacion
+service.yaml para crar un servicio en el directorio raiz del chart debe de haber:
+Chart.yaml para contener la version de la aplicacion
 se recomienda que este un fichero de licencia y un README
 
 
@@ -42,7 +40,7 @@ Subimos a github el index.haml y el xxxx.tgz. en nuestro caso esta en la carpeta
 
 
 
-# Instalacion utilizando helmn chart
+# Instalacion utilizando helm chart
 
 ## Buscar el paquete
 Buscar kping en artifacthub

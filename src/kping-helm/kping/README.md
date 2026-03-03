@@ -4,9 +4,9 @@ kqping is an utility to test networking communications in kubernetes cluster.
 
 kping has been developed using go and swift for linux platforms and Swift for macOS/iOS
 
-kping can test communications launching the programa as server and using the program in another node, container or node as client. 
+kping can test communications launching the program as server and using the program in another node, container or node as client. 
 
-kping can work with the dolowwing protocolos:
+kping can work with the following protocols:
 - UDP
 - UCP/QUIC
 - TCP
@@ -15,7 +15,7 @@ Available implementation in go and swift help to test 5G networks low latency us
 
 
 ## kping server mode
-In "server" mode qping act as a server listening for QUIC connection. Open a new connection for each client and listen for the request, the server reply to each client request
+In "server" mode kping act as a server listening for QUIC connection. Open a new connection for each client and listen for the request, the server reply to each client request
 
 Use: kping server <port>
 Example: ./kping server 25450

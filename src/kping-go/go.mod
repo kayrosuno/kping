@@ -4,6 +4,7 @@ go 1.24.4
 
 require (
 	atomicgo.dev/keyboard v0.2.9
+	github.com/ishidawataru/sctp v0.0.0-20251114114122-19ddcbc6aae2
 	github.com/quic-go/quic-go v0.56.0
 	github.com/rs/zerolog v1.34.0
 	github.com/spf13/cobra v1.10.1
