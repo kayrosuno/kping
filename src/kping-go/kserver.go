@@ -155,22 +155,30 @@ func kserver(args []string) error {
 		nServers += 1
 	}
 
-	wg.Add(5)
+	wg.Add(nServers + 1)
 
 	//Listen IPv4. QUIC
-	go listenIPv4QUIC(listenerQuic4, &wg)
+	if listenerQuic4 != nil {
+		go listenIPv4QUIC(listenerQuic4, &wg)
+	}
 
 	//Listen IPv6. QUIC
-	go listenIPv6QUIC(listenerQuic6, &wg)
+	if listenerQuic6 != nil {
+		go listenIPv6QUIC(listenerQuic6, &wg)
+	}
 
 	//Listen UDP4
 	go listenIPv4UDP(iPort, &wg)
 
 	//Listen TCP4
-	go listenIPv4TCP(listenerTCP4, &wg)
+	if listenerTCP4 != nil {
+		go listenIPv4TCP(listenerTCP4, &wg)
+	}
 
 	//Listen SCTP4
-	go listenIPv4SCTP(listenerSCTP4, &wg)
+	if listenerSCTP4 != nil {
+		go listenIPv4SCTP(listenerSCTP4, &wg)
+	}
 
 	wg.Wait()
 
@@ -341,7 +349,9 @@ func handleUDP4Connection(conn *net.UDPConn) {
 func handleSCTP4Connection(conn *sctp.SCTPConn) {
 
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339})
-	log.Info().Msg(fmt.Sprintf("New SCTP connection <-- client from %s", conn.RemoteAddr().String()))
+
+	remoteAddr := conn.RemoteAddr().String()
+	log.Info().Msg(fmt.Sprintf("New SCTP connection <-- client from %s", remoteAddr))
 
 	defer conn.Close()
 
@@ -358,7 +368,7 @@ func handleSCTP4Connection(conn *sctp.SCTPConn) {
 		if err != nil {
 			if err != io.EOF {
 				//Log error
-				log.Error().Msg(fmt.Sprintf("Client %s '%s'", conn.RemoteAddr().String(), err.Error()))
+				log.Error().Msg(fmt.Sprintf("Client %s '%s'", remoteAddr, err.Error()))
 				break
 			}
 		}
@@ -408,11 +418,7 @@ func handleSCTP4Connection(conn *sctp.SCTPConn) {
 	}
 
 	//Log error
-	if conn.RemoteAddr() != nil {
-		log.Info().Msg(fmt.Sprintf("Close connection SCTP client %s ", conn.RemoteAddr().String()))
-	} else {
-		log.Info().Msg(fmt.Sprintf("Close connection SCTP client "))
-	}
+	log.Info().Msg(fmt.Sprintf("Close connection SCTP client %s ", remoteAddr))
 }
 
 // Nueva conexión QUIC aceptada
