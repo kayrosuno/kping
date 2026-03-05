@@ -27,7 +27,7 @@ spec:
           name: "quic-udp"
         - containerPort: 25451
           protocol: UDP
-          name: "udp only"
+          name: "udp"
         - containerPort: 25450
           protocol: SCTP
           name: "sctp"
