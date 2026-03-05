@@ -15,5 +15,15 @@ spec:
     nodePort: 30451
     targetPort: 25451
     protocol: UDP
+  - name: kping-tcp
+    port: 25450
+    nodePort: 30450
+    targetPort: 25450
+    protocol: TCP
+  - name: kping-sctp
+    port: 25450
+    nodePort: 30450
+    targetPort: 25450
+    protocol: SCTP
   selector:
     app: kping-server

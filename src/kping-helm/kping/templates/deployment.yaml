@@ -28,4 +28,7 @@ spec:
         - containerPort: 25451
           protocol: UDP
           name: "udp only"
+        - containerPort: 25450
+          protocol: SCTP
+          name: "sctp"
         imagePullPolicy: Always
