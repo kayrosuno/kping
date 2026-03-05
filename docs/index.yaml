@@ -3,12 +3,22 @@ entries:
   kping:
   - apiVersion: v2
     appVersion: 0.3.5
-    created: "2026-03-05T20:12:31.828299+02:00"
+    created: "2026-03-05T20:52:59.463551+01:00"
     description: kping helm chart to test Kubernetes networking
-    digest: ee339ce0ccf5309be7aea3c111554d232fe7176b463740e925e4cb3a22cd0bbc
+    digest: 27270fca9b36398685af4b8644f59db05177eac8de476713c46defbd72c333a5
     name: kping
     type: application
     urls:
     - https://kayrosuno.github.io/kping/kping-0.3.5.tgz
     version: 0.3.5
-generated: "2026-03-05T20:12:31.825398+02:00"
+  - apiVersion: v2
+    appVersion: 0.3.4
+    created: "2026-03-05T20:52:59.463284+01:00"
+    description: kping helm chart to test Kubernetes networking
+    digest: 78f1c685cb727d3c7842ab6d5896b95fa2d61f712eb8f52370bb349971883c6b
+    name: kping
+    type: application
+    urls:
+    - https://kayrosuno.github.io/kping/kping-0.3.4.tgz
+    version: 0.3.4
+generated: "2026-03-05T20:52:59.462508+01:00"
