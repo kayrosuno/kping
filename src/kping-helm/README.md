@@ -20,7 +20,7 @@ se recomienda que este un fichero de licencia y un README
 
 Creamos el paquete que generara el contenido del directorio en un fichero xxxxx.tgz
 ``
-helm package kping --url https://kayrosuno.github.io/kping/
+helm package kping 
 ``
 
 ## Crear el indice
