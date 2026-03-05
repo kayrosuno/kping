@@ -43,7 +43,6 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && apt-get install -y sudo \
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
-
 # ********************************************************
 # * Anything else you want to do like clean up goes here *
 # ********************************************************
@@ -67,6 +66,7 @@ COPY --from=build-stage /app/kping /app/kping
 EXPOSE 25450/udp
 EXPOSE 25451/udp
 EXPOSE 25450/tcp
+EXPOSE 25450/sctp
 
 #Ejecuta kping en modo server, default port 25450 UDP (QUIC)
 ENTRYPOINT ["/app/kping","server"]
